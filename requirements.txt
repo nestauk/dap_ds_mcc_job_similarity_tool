@@ -1,1 +1,2 @@
 streamlit
+nesta_ds_utils[viz,s3] @ git+https://github.com/nestauk/nesta_ds_utils.git
