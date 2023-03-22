@@ -23,7 +23,8 @@ def build_job_similarity_dict(knn: int=3) -> dict:
     """
 
     j_dict = dict()
-    for j in range(num_of_jobs):
+    for j in range(10): #num_of_jobs):
+        print(j)
         top_matches = JobSearch(job_history=[j]).get_best_matches(numb_of_matches= knn + 1)
         j_dict[j] = [[int(top_matches[m].job2.job_index), 
                     float(top_matches[m].compare_jobs()[0])]
@@ -32,7 +33,9 @@ def build_job_similarity_dict(knn: int=3) -> dict:
     return j_dict
 
 
-def build():
+def build_and_upload():
+    """Build the job dictionary and upload it to S3. 
+    """
     # Execute only if run as a script
     BUCKET_NAME = "mcc-sussex"
 
