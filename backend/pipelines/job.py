@@ -7,6 +7,7 @@ from scipy.optimize import linear_sum_assignment as LSA
 import math
 
 CONFIGS = json.load(open('backend/config/CONFIG.json'))
+matching_threshold = CONFIGS["SKILL_MATCHING"]["TRESHOLD"]
 
 occs, skill_occs, skills, bert_skills = load_data()
 num_of_jobs = len(occs)
@@ -14,7 +15,6 @@ num_of_jobs = len(occs)
 def sigmoid(x):
     ax_b = (50*x) - 43.5
     return 1 / (1 + math.exp(-1*ax_b))
-
 
 class Job:
     # Define the Job class that takes a job_index as an input parameter for initialization
@@ -61,7 +61,6 @@ class Job:
         embedding_table = embedding_table.drop(['skillUri'], axis=1)
         
         return embedding_table
-
 class CompareJobs:
     
     def __init__(self, job_history, job2):
@@ -137,23 +136,43 @@ class CompareJobs:
         return essential_skill_similarity_score, optional_skill_similarity_score , 0, 0#,work_context_similarity_score, work_area_similarity_score
 
 
-    def explain_skills(self, essential):
+    def explain_skills(self, essential: bool):
+        """Explain skills matches for a given job pair
+
+        Args:
+            essential (bool): Focus only on essential skills
+
+        Returns:
+            Return list of pairs of skills matches and list of associated matching score
+        """
         _, matches, values = self.skill_similarity(essential)
         matches = list(matches)
         if essential:
-            job1_skills = skills.iloc[[self.job1.essential_skills[x[0]] for x in matches]]['preferredLabel'].values
+            job1_skills = [
+                skills.set_index("conceptUri").loc[self.job1.essential_skills.iloc[x[0]]]['preferredLabel'] 
+                for x in matches
+                ]
         else:
-            job1_skills = skills.iloc[[self.job1.optional_skills[x[0]] for x in matches]]['preferredLabel'].values
-        
-        job2_skills = skills.iloc[[self.job2.essential_skills[x[1]] for x in matches]]['preferredLabel'].values
+            job1_skills = [
+                skills.set_index("conceptUri").loc[self.job1.optional_skills.iloc[x[0]]]['preferredLabel'] 
+                for x in matches
+                ]
 
-        skill_pairs = np.array(list(zip(job1_skills, job2_skills)))
+        job2_skills = [
+            skills.set_index("conceptUri").loc[self.job2.essential_skills.iloc[x[1]]]['preferredLabel']
+            for x in matches
+            ]
         order = np.argsort(values)[::-1]
-        return skill_pairs[order], values[order]
+        skill_pairs = np.array(list(zip(job1_skills, job2_skills)))[order]
+        values = np.array(values)[order]
+        #return skill_pairs[order], np.array(values)[order]
+        return {
+            "matching_skills": [p[0] for i, p in enumerate(skill_pairs) if values[i] > matching_threshold], 
+            "missing_skills": [p[0] for i, p in enumerate(skill_pairs) if values[i] <= matching_threshold]
+            }
 
     def explain_work_context(self):
         return 0
 
     def explain_work_area(self):
         return 0
-
