@@ -26,7 +26,7 @@ def build_job_similarity_dict(knn: int=3) -> dict:
     """
 
     j_dict = dict()
-    for j in range(num_of_jobs):
+    for j in range(10):#num_of_jobs):
         print(j)
         J = JobSearch(job_history=[j])
         top_matches = J.get_best_matches(numb_of_matches= knn + 1)
@@ -47,4 +47,4 @@ def build_and_upload():
     BUCKET_NAME = "mcc-sussex"
 
     job_dict = build_job_similarity_dict()
-    S3.upload_obj(job_dict, BUCKET_NAME, "job_similarity_dict.json")
+    S3.upload_obj(job_dict, BUCKET_NAME, "job_similarity_dict_test.json")

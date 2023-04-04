@@ -101,7 +101,7 @@ class CompareJobs:
         if embedding_2.shape[0] == 0 or embedding_1.shape[0] == 0:
             return 1, [], []
 
-        # calculate cosine similarity and pass to LSA to reduce dimensionality
+        # calculate cosine similarity and pass to LSA to compute the skill matches
         cs = -1 * cosine_similarity(embedding_1, embedding_2)
         lsa = LSA(cs)
         skill_pairs = np.array([sigmoid(-1 * cs[x1, x2]) for x1, x2 in zip(lsa[0], lsa[1])])
@@ -167,8 +167,8 @@ class CompareJobs:
         values = np.array(values)[order]
         #return skill_pairs[order], np.array(values)[order]
         return {
-            "matching_skills": [p[0] for i, p in enumerate(skill_pairs) if values[i] > matching_threshold], 
-            "missing_skills": [p[0] for i, p in enumerate(skill_pairs) if values[i] <= matching_threshold]
+            "matching_skills": [p[1] for i, p in enumerate(skill_pairs) if values[i] > matching_threshold], 
+            "missing_skills": [p[1] for i, p in enumerate(skill_pairs) if values[i] <= matching_threshold]
             }
 
     def explain_work_context(self):
