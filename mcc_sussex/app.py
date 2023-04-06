@@ -1,5 +1,4 @@
 import streamlit as st
-from mcc_sussex import IMAGE_DIR
 from PIL import Image
 from nesta_ds_utils.viz.altair import formatting
 from getters.app_data import get_similarity_data
@@ -11,7 +10,9 @@ formatting.setup_theme()
 
 PAGE_TITLE = "Career Transitions"
 
-nesta_fav = Image.open(f"{IMAGE_DIR}/favicon.ico")
+
+current_dir = os.getcwd() 
+nesta_fav = Image.open(f"{current_dir}/images/favicon.ico")
 
 st.set_page_config(page_title=PAGE_TITLE, layout="wide", page_icon=nesta_fav)
 
