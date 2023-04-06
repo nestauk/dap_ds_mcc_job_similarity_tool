@@ -1,4 +1,5 @@
 import streamlit as st
+import os
 from PIL import Image
 from nesta_ds_utils.viz.altair import formatting
 from getters.app_data import get_similarity_data
