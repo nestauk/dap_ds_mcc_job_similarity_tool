@@ -1,7 +1,10 @@
 from nesta_ds_utils.loading_saving import S3
-from mcc_sussex import BUCKET_NAME
 from typing import Dict, List, Union
 import json
+
+
+BUCKET_NAME = "mcc-sussex"
+
 
 def get_similarity_data(local: bool=True) -> Dict[
     str, 
