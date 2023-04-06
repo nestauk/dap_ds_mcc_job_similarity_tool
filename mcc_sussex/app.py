@@ -13,7 +13,7 @@ PAGE_TITLE = "Career Transitions"
 
 
 current_dir = os.getcwd() 
-nesta_fav = Image.open(f"{current_dir}/images/favicon.ico")
+nesta_fav = Image.open(f"{current_dir}/mcc_sussex/images/favicon.ico")
 
 st.set_page_config(page_title=PAGE_TITLE, layout="wide", page_icon=nesta_fav)
 
