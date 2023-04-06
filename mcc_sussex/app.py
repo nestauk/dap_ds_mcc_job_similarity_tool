@@ -2,7 +2,7 @@ import streamlit as st
 from mcc_sussex import IMAGE_DIR
 from PIL import Image
 from nesta_ds_utils.viz.altair import formatting
-from mcc_sussex.getters.app_data import get_similarity_data
+from getters.app_data import get_similarity_data
 from collections import defaultdict
 import altair as alt
 import pandas as pd
