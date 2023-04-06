@@ -73,7 +73,7 @@ data = load_data()
 #Set up banner at the top with title and logo
 logo, white_space, warning = st.columns([1, 3, 2])
 with logo:
-    st.image(Image.open(f"{IMAGE_DIR}/nesta_sussex_logo.png"))
+    st.image(Image.open(f"{current_dir}/mcc_sussex/images/nesta_sussex_logo.png"))
 with warning:
     st.markdown("🚨 WARNING: This app is currently in **beta** and the algorithm to reccommend jobs is **experimental** 🚨")
 
@@ -93,7 +93,7 @@ st.markdown("")
 #Allow user to enter job title which is stored in the variable "latest_job" - the options are defined by the keys in the data dictionary
 diamond, label, job_selector = st.columns([.75, 10, 4])
 with diamond:
-    st.image(Image.open(f"{IMAGE_DIR}/diamond.png"))
+    st.image(Image.open(f"{current_dir}/mcc_sussex/images/diamond.png"))
 with label:
     st.title("To get started, enter your most recent job title:")
 with job_selector:
