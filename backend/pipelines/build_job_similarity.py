@@ -29,13 +29,13 @@ def build_job_similarity_dict(knn: int=3) -> dict:
     for j in range(10):#num_of_jobs):
         print(j)
         J = JobSearch(job_history=[j])
-        top_matches = J.get_best_matches(numb_of_matches= knn + 1)
+        top_matches = J.get_best_matches(numb_of_matches= knn)
         j_dict[J.jobs[0].job_name] = [
             dict(
                 {"job_name": top_matches[m].job2.job_name, 
                 "skill_similarity": float(1 - top_matches[m].compare_jobs()[0])},
                  **J.job_similarity()[m].explain_skills(essential=True)
-                 ) for m in range(1, knn + 1)
+                 ) for m in range(knn)
             ]
     return j_dict
 

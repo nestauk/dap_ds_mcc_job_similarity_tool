@@ -27,7 +27,10 @@ class JobSearch():
     # Calculate similarity between each job in job_history and all jobs in job_list
     def job_similarity(self):
         # Create an array of compareJobs objects for each job in job_list
-        compared_jobs = np.array([job.CompareJobs(self.jobs, job_i) for job_i in job_list])
+        compared_jobs = np.array([
+            job.CompareJobs(self.jobs, job_list[i]) for i in range(job.num_of_jobs) 
+            if i != self.jobs[0].job_index
+            ])
         # Create an array of comparison scores for each compared job pair
         similarities = np.vstack([x.comparison for x in compared_jobs])
         # Sort compared jobs based on mean similarity score
