@@ -155,7 +155,7 @@ if latest_job != "": # only run the next bits once the user has entered a latest
     with text:
         st.markdown("*To learn more about how to transition into each of these jobs, expand the corresponding sections below*")
     
-    with st.expander(label = ordered_matches[0]):
+    with st.expander(label = "##### " + ordered_matches[0]):
         #display matching and missing skills for top match
         match_data = job_data[0]
         matches, bar, missing = st.columns([5,1,5])
@@ -179,7 +179,7 @@ if latest_job != "": # only run the next bits once the user has entered a latest
             for skill in match_data["missing_skills"]:
                 st.markdown(":red[- " + skill + "]")
     
-    with st.expander(label = ordered_matches[1]):
+    with st.expander(label = "##### " + ordered_matches[1]):
         #display matching and missing skills for second match
         match_data = job_data[1]
         matches, bar, missing = st.columns([5,1,5])
@@ -194,7 +194,7 @@ if latest_job != "": # only run the next bits once the user has entered a latest
             for skill in match_data["missing_skills"]:
                 st.markdown(":red[- " + skill + "]")
     
-    with st.expander(label = ordered_matches[2]):
+    with st.expander(label = "##### " + ordered_matches[2]):
         #display matching and missing skills for third match
         match_data = job_data[2]
         matches, bar, missing = st.columns([5,1,5])
