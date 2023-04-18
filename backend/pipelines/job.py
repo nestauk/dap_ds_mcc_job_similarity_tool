@@ -141,6 +141,8 @@ class CompareJobs:
         optional_skill_similarity_score = self.skill_similarity(essential = False)[0]
         #work_context_similarity_score = self.work_context_similarity()
         #work_area_similarity_score = self.work_area_similarity()
+
+        # Change this to return avareged scores
         return essential_skill_similarity_score, optional_skill_similarity_score , 0, 0#,work_context_similarity_score, work_area_similarity_score
 
 
