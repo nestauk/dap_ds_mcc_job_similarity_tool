@@ -29,6 +29,9 @@ class Job:
         # Extract the essential and optional skills for the job using the get_skills method
         self.essential_skills = self.get_skills(essential=True)
         self.optional_skills = self.get_skills(essential=False)
+
+        # # Add work context of job <- for Emily
+        # self.work_context = self.get_work_context() ?? 
         
         # Compute the embeddings for the essential and optional skills using the get_embedding method
         self.essential_embedding = self.get_embedding(essential=True)
@@ -47,6 +50,10 @@ class Job:
             skills = job_skills['skillUri']
         
         return skills
+
+    # # Get work context from data <- for Emily
+    # def get_work_context(self):
+    #     ?? 
     
     # Define the get_embedding method to compute the embeddings for a given set of skills (either essential or optional)
     def get_embedding(self, essential):
@@ -119,6 +126,7 @@ class CompareJobs:
         minimum_difference = np.nanmin(work_area_differences, 0)
         return np.linalg.norm(minimum_difference)
 
+    # Check this comparison for work context <- for Emily
     def work_context_similarity(self):
 
         if np.isnan(self.job2.work_context).any() or np.isnan(np.vstack([x.work_context for x in self.job_history])).all(0).any():
