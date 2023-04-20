@@ -5,7 +5,7 @@ def create_esco_to_soc():
     """Create the ESCO to SOC converter
 
     Returns:
-        pd.Dataframe: Dataframe containsing ESCO and SOC code corresponcence
+        pd.Dataframe: Dataframe with ESCO and SOC code mapping
     """
     # Read the excel file and get a list of sheet names
     excel_file = pd.ExcelFile('backend/data/Draft ESCO crosswalk.xlsx')
@@ -27,7 +27,7 @@ def create_soc_to_sector():
     """Create SOC to sector map
 
     Returns:
-        pd.Dataframe: 
+        pd.Dataframe: Dataframe with SOC and Sector code mapping
     """
     # Read the excel file and get a list of sheet names
     sector_data_file = pd.ExcelFile('backend/data/SOC Codes for 6 Key Sectors.xlsx')
