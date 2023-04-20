@@ -45,6 +45,7 @@ def build_and_upload():
     """
     # Execute only if run as a script
     BUCKET_NAME = "mcc-sussex"
+    data_name = "job_similarity_dict_sector_filter.json"
 
     job_dict = build_job_similarity_dict()
-    S3.upload_obj(job_dict, BUCKET_NAME, "job_similarity_dict.json")
+    S3.upload_obj(job_dict, BUCKET_NAME, data_name)
