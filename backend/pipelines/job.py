@@ -9,7 +9,7 @@ import math
 CONFIGS = json.load(open('backend/config/CONFIG.json'))
 matching_threshold = CONFIGS["SKILL_MATCHING"]["TRESHOLD"]
 
-occs, skill_occs, skills, bert_skills = load_data()
+occs, skill_occs, skills, bert_skills, esco_to_soc, soc_to_sector = load_data()
 num_of_jobs = len(occs)
 
 def sigmoid(x):
@@ -33,6 +33,18 @@ class Job:
         # Compute the embeddings for the essential and optional skills using the get_embedding method
         self.essential_embedding = self.get_embedding(essential=True)
         self.optional_embedding = self.get_embedding(essential=False)
+
+        # Add priority sectors
+        self.sector = self.get_sector()
+
+    # Get high-priority sector
+    def get_sector(self):
+        mask = esco_to_soc['ESCO code'].str.contains(occs.code[self.job_index]) == True
+        df = esco_to_soc[mask]['SOC2020 code']
+        if len(df):
+            return list(soc_to_sector[soc_to_sector.SOC == df.iloc[0][:4]].Sector) 
+        else:
+            return []
 
     # Define the get_skills method to extract the essential or optional skills for a given occupation URI
     def get_skills(self, essential):
