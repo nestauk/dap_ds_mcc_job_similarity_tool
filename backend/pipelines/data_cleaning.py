@@ -45,7 +45,7 @@ def create_soc_to_sector():
     # Concatenate all the dataframes into a single dataframe
     return pd.concat(dfs).drop_duplicates()
 
-def build_and_upload():
+def preprocess_and_upload():
     """Build the esco-to-soc and soc-to-sector and upload them to S3. 
     """
     # Execute only if run as a script
