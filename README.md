@@ -17,6 +17,11 @@ The app development consist of two steps:
 To build the precomputed data:
 
 - create a conda environment with `requiremnent.txt` installed
+- preprocess and upload data by running:
+``` 
+from backend.pipelines.data_cleaning import build_and_upload
+preprocess_and_upload()
+```
 - build the dataset and upload it to S3 by running:
 ``` 
 from backend.pipelines.build_job_similarity import build_and_upload

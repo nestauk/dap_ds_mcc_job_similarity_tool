@@ -45,7 +45,21 @@ def getter_work_area():
 
     return S3.download_obj(BUCKET_NAME, "Work_area.csv", download_as= "dataframe")
 
+
+def getter_esco_to_soc():
+    """Getter of `esco_to_soc.csv` from S3
+    """
+
+    return S3.download_obj(BUCKET_NAME, "esco_to_soc.csv", download_as= "dataframe")
+
+
+def getter_soc_to_sector():
+    """Getter of `soc_to_sector.csv` from S3
+    """
+
+    return S3.download_obj(BUCKET_NAME, "soc_to_sector.csv", download_as= "dataframe")
+
 def load_data():
     """Load all datasets
     """
-    return getter_occupation_en(), getter_occupationSkillRelations(), getter_skills_en(), getter_bert_skills()
+    return getter_occupation_en(), getter_occupationSkillRelations(), getter_skills_en(), getter_bert_skills(), getter_esco_to_soc(), getter_soc_to_sector()

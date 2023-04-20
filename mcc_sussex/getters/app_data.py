@@ -30,7 +30,7 @@ def get_similarity_data(local: bool=True) -> Dict[
     """
 
     if local:
-        with open("mcc_sussex/data/job_similarity_dict.json") as json_file:
+        with open("mcc_sussex/data/job_similarity_dict_sector_filter.json") as json_file:
             return json.load(json_file)
     else:
         return S3.download_obj(BUCKET_NAME, "job_similarity_dict.json", download_as= "dict")

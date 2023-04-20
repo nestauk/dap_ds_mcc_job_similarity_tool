@@ -42,20 +42,21 @@ def load_data() -> Dict[
     return get_similarity_data()
 
 @st.cache_data(show_spinner = "Calculating job similarity")
-def filter_job(latest_job: str, data: Dict[str, List[Dict[str, Union[str, float, List[str]]]]]) -> Tuple[List[Dict[str, Union[str, float, List[str]]]],List[str], Dict[str, int]]:
+def filter_job(latest_job: str, sector_select: str, data: Dict[str, List[Dict[str, Union[str, float, List[str]]]]]) -> Tuple[List[Dict[str, Union[str, float, List[str]]]],List[str], Dict[str, int]]:
     """filter the full data to only include data about the input job
 
     Args:
         latest_job (str): job inputted by user via filter
+        sector_select (str): high-priority sector selection
         data (Dict[str, List[Dict[str, Union[str, float, List[str]]]]]): full dictionary with all match metadata
 
     Returns:
         Tuple[List[Dict[str, Union[str, float, List[str]]]],List[str], Dict[str, int]]: 
-            - List[Dict[str, Union[str, float, List[str]]]]: list of metadata on matches for current job
+            - List[Dict[str, Union[str, float, List[str]]]]: list of metadata on matches for current job and high-priority sector
             - List[str]: ordered list of names of top matches
             - Dict[str, int]: key: match, value: percent of skills already posessed
     """
-    filtered_data =  data[latest_job]
+    filtered_data =  data[latest_job][sector_select] # here add [sector_select] for high-priority selection
     ordered_matches = []
     match_overlap_data = defaultdict(int)
     for match in filtered_data:
@@ -114,12 +115,13 @@ sector_select = st.radio(
         "Health and Care"
     ],
     horizontal = True)
-
+if not sector_select == "Show all":
+    st.markdown("""Brief description of the high-priority sector """)    
 st.markdown("""<hr style="height:3px;border:none;color:#e5cbff;background-color:#e5cbff;" /> """, unsafe_allow_html=True)
 
 if latest_job != "": # only run the next bits once the user has entered a latest job
     #filter dictionary to return data on selected job (stored as latest_job)
-    job_data, ordered_matches, match_overlaps = filter_job(latest_job, data)
+    job_data, ordered_matches, match_overlaps = filter_job(latest_job, sector_select, data)
 
     #generate bar chart to show top matches and skill overlaps
     match_overlap_bars = alt.Chart(match_overlaps).mark_bar().encode(
