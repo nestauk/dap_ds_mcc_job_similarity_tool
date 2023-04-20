@@ -19,5 +19,12 @@
     "NUMBER_TO_RETURN": 5
   },
   "HISTORY": { "DECAY": -0.8, "SPEED": 1 },
-  "SKILL_MATCHING": {"TRESHOLD": 0.1}
+  "SKILL_MATCHING": {"TRESHOLD": 0.1},
+  "SECTORS": [
+    "Manufacturing and Engineering", 
+    "Visitor and Cultural Industries", 
+    "Digital", 
+    "Land Based", 
+    "Construction",
+    "Health and Care"]
 }

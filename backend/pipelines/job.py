@@ -42,7 +42,7 @@ class Job:
         mask = esco_to_soc['ESCO code'].str.contains(occs.code[self.job_index]) == True
         df = esco_to_soc[mask]['SOC2020 code']
         if len(df):
-            return list(soc_to_sector[soc_to_sector.SOC == df.iloc[0][:4]].Sector) 
+            return list(soc_to_sector[soc_to_sector.SOC == str(df.iloc[0])[:4]].Sector) 
         else:
             return []
 

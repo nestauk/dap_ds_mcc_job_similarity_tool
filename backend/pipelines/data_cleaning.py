@@ -40,12 +40,12 @@ def create_soc_to_sector():
     for sector in sector_names:
         df = pd.read_excel(sector_data_file, sheet_name=sector)
         df['Sector'] = sector
-        dfs.append(df[['SOC', 'Sector']])
+        dfs.append(df[['SOC', 'Sector']].astype(str))
 
     # Concatenate all the dataframes into a single dataframe
     return pd.concat(dfs).drop_duplicates()
 
-def preprocess_and_upload():
+def build_and_upload():
     """Build the esco-to-soc and soc-to-sector and upload them to S3. 
     """
     # Execute only if run as a script
