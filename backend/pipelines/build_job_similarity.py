@@ -31,7 +31,7 @@ def build_job_similarity_dict(knn: int=3) -> dict:
     """
 
     j_dict = dict()
-    for j in range(50): #num_of_jobs):
+    for j in range(10): #num_of_jobs):
         print(j)
         aux_dict = dict()
         for sector in ['Show all'] + CONFIGS['SECTORS']:

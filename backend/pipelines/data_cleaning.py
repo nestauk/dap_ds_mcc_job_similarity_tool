@@ -39,6 +39,8 @@ def create_soc_to_sector():
     # Loop through each sheet and append the modified dataframe to the list of dataframes
     for sector in sector_names:
         df = pd.read_excel(sector_data_file, sheet_name=sector)
+        
+        # <--- For Emily: filter out hidden rows!! 
         df['Sector'] = sector
         dfs.append(df[['SOC', 'Sector']].astype(str))
 
