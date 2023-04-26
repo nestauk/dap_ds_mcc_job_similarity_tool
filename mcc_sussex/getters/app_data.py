@@ -6,10 +6,10 @@ import json
 BUCKET_NAME = "mcc-sussex"
 
 
-def get_similarity_data(local: bool=True) -> Dict[
-    str, 
+def get_similarity_data(local: bool = True) -> Dict[
+    str,
     List[Dict[str, Union[str, float, List[str]]]]
-    ]:
+]:
     """gets the pre-calculated job similarity dictionary to use as the backend of the app
 
     Args:
@@ -33,4 +33,4 @@ def get_similarity_data(local: bool=True) -> Dict[
         with open("mcc_sussex/data/job_similarity_dict.json") as json_file:
             return json.load(json_file)
     else:
-        return S3.download_obj(BUCKET_NAME, "job_similarity_dict.json", download_as= "dict")
+        return S3.download_obj(BUCKET_NAME, "job_similarity_dict_work_context.json", download_as="dict")
