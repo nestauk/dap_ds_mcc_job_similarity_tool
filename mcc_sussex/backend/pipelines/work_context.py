@@ -1,8 +1,8 @@
 """builds the file work_context.csv
 """
-from backend.getters.data_loader import getter_occupation_en
-from backend.getters.work_context import get_onet_esco_crosswalk, get_onet_work_context
-from backend import logger, BUCKET_NAME
+from mcc_sussex.backend.getters.data_loader import getter_occupation_en
+from mcc_sussex.backend.getters.work_context import get_onet_esco_crosswalk, get_onet_work_context
+from mcc_sussex.backend import logger, BUCKET_NAME
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import normalize
@@ -137,5 +137,7 @@ if __name__ == "__main__":
 
     logger.info("Formatting and saving lookup of work context ids to names")
     id_df = pd.DataFrame.from_dict(map_work_context_to_int, orient="index").join(onet_work_context[[
-        "Element ID", "Element Name"]].drop_duplicates().set_index("Element ID"), how="left")
+        "Element ID", "Element Name"]].drop_duplicates().set_index("Element ID"), how="left").reset_index()
+    id_df.columns = ["ID", "index", "name"]
+
     S3.upload_obj(id_df, BUCKET_NAME, "work_context_id_lookup.csv")
