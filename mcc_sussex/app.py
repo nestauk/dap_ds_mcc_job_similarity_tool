@@ -2,8 +2,8 @@ import streamlit as st
 import os
 from PIL import Image
 from nesta_ds_utils.viz.altair import formatting
-from mcc_sussex.mapping_career_causeways.mapping_career_causeways import transitions_utils
-import mcc_sussex.mapping_career_causeways.mapping_career_causeways.load_data_utils as load_all_data
+from mcc_sussex.backend.recommendations import transitions_utils
+import mcc_sussex.backend.getters.load_data_utils as load_all_data
 from collections import defaultdict
 import altair as alt
 import pandas as pd
