@@ -100,14 +100,14 @@ def find_most_similar(
     Returns
     -------
     df (pandas.DataFrame):
-        A dataframe with the following fields: 'id', 'preferred_label' and 'similarity'
+        A dataframe with the following fields: 'id', 'preferredLabel' and 'similarity'
     """
     occ_id = data.occ_title_to_id(occ)
     destination_ids = occupations_to_check(destination_ids)
     sim_matrix = sim.select_similarity_matrix(similarity_measure)
     if transpose:
         sim_matrix = sim_matrix.T
-    df = find_closest(occ_id, sim_matrix, data.occ[['id', 'preferred_label']])
+    df = find_closest(occ_id, sim_matrix, data.occ[['id', 'preferredLabel']])
     df = df[df.id.isin(destination_ids)].iloc[0:n]
     return df
 
@@ -269,9 +269,9 @@ def transition_data_processing(
 
     # Save the row data
     columns['origin_id'] += [j_id] * N
-    columns['origin_label'] += [data.occ.loc[j_id].preferred_label] * N
+    columns['origin_label'] += [data.occ.loc[j_id].preferredLabel] * N
     columns['destination_id'] += viable_ids
-    columns['destination_label'] += data.occ.loc[viable_ids].preferred_label.to_list()
+    columns['destination_label'] += data.occ.loc[viable_ids].preferredLabel.to_list()
     columns['similarity'] += list(sim.W_combined[j_id, viable_ids])
 
     columns['is_jobzone_ok'] += list(is_jobzone_ok)
@@ -520,7 +520,7 @@ def show_skills_overlap(
 
     if verbose:
         print(
-            f"from {data.occ.loc[job_i].preferred_label} (id {job_i}) to {data.occ.loc[job_j].preferred_label} (id {job_j})")
+            f"from {data.occ.loc[job_i].preferredLabel} (id {job_i}) to {data.occ.loc[job_j].preferredLabel} (id {job_j})")
 
     # Create the input dataframe in the required format
     if skills_match == 'optional':
@@ -539,7 +539,7 @@ def show_skills_overlap(
     # Compare occupations
     df, score = compare_nodes_utils.two_node_comparison(
         node_to_items_, job_i, job_j,
-        data.skills[['id', 'preferred_label']],
+        data.skills[['id', 'preferredLabel']],
         embeddings,
         metric='cosine',
         matching_method=matching_method,
@@ -551,9 +551,9 @@ def show_skills_overlap(
     # Tidy up the dataframe
     df.rename(columns={
         'id_x': 'origin_skill_id',
-        'preferred_label_x': 'origin_skill',
+        'preferredLabel_x': 'origin_skill',
         'id_y': 'destination_skill_id',
-        'preferred_label_y': 'destination_skill',
+        'preferredLabel_y': 'destination_skill',
         'similarity': 'score',
         'similarity_raw': 'similarity'}, inplace=True)
     df = df[['origin_skill_id', 'origin_skill',
@@ -563,7 +563,7 @@ def show_skills_overlap(
     # Add leftover skills from the destination occupation
     all_destination_skills = data.occupation_to_skills[
         (data.occupation_to_skills.occupation_id == job_j) &
-        (data.occupation_to_skills.importance == 'Essential')].skill_id.to_list()
+        (data.occupation_to_skills.relationType == 'essential')].skill_id.to_list()
     skills_to_add = set(all_destination_skills).difference(
         set(df.destination_skill_id))
 
@@ -582,7 +582,7 @@ def show_skills_overlap(
             append_df['origin_skill'].append('-')
             append_df['destination_skill_id'].append(s)
             append_df['destination_skill'].append(
-                data.skills.loc[s].preferred_label)
+                data.skills.loc[s].preferredLabel)
             append_df['similarity'].append(0)
             append_df['score'].append(0)
         df = df.append(pd.DataFrame(data=append_df), ignore_index=True)
@@ -623,6 +623,7 @@ class CompareFeatures():
             lambda x: categorise(x))
 
         ### Import ESCO skills category vectors ###
+        """
         self.esco_vectors_1 = np.load(
             data_folder + 'interim/work_activity_features/esco_hierarchy_vectors_level_1.npy')
         self.esco_features_1 = pickle.load(open(
@@ -643,6 +644,7 @@ class CompareFeatures():
             data_folder + 'interim/work_activity_features/esco_hierarchy_codes_level_3.pickle', 'rb'))
         self.esco_features_3 = data.concepts[data.concepts.code.isin(
             self.esco_features_3)][['code', 'title']].sort_values('code').copy()
+        """
 
     def select_esco_level(self, level=2):
         """ Selects the level of ESCO hierarchy; if level=None, uses work context features instead """
@@ -921,13 +923,13 @@ class SkillsGaps():
         skill_similarities['prevalence'] = skill_similarities['counts'] / self.n_trans
         # Add information about skills
         skill_similarities = skill_similarities.merge(
-            data.skills[['id', 'preferred_label',
+            data.skills[['id', 'preferredLabel',
                          'level_1', 'level_2', 'level_3']],
             left_on='skills_id', right_on='id', how='left')
         # Clean up the dataframe
         skill_similarities = self.clean_up_df(skill_similarities)
         skill_similarities = skill_similarities[[
-            'id', 'preferred_label', 'level_1', 'level_2', 'level_3', 'counts', 'prevalence', 'score', 'stdev']]
+            'id', 'preferredLabel', 'level_1', 'level_2', 'level_3', 'counts', 'prevalence', 'score', 'stdev']]
 
         return skill_similarities
 
@@ -939,7 +941,7 @@ class SkillsGaps():
 
         # Add skills cluster information
         skill_similarities_all_clust = self.skill_similarities_all.merge(data.skills[[
-            'id', 'preferred_label', 'level_1', 'level_2', 'level_3', 'code']], left_on='skills_id', right_on='id')
+            'id', 'preferredLabel', 'level_1', 'level_2', 'level_3', 'code']], left_on='skills_id', right_on='id')
         # Aggregate scores
         skill_similarities = self.count_and_agg_scores(
             skill_similarities_all_clust, level)
@@ -980,7 +982,7 @@ class SkillsGaps():
             xx = []
             # Add matching scores
             for jj, rrow in dff.iterrows():
-                xx.append(f'{rrow.preferred_label} ({np.round(rrow.score,2)})')
+                xx.append(f'{rrow.preferredLabel} ({np.round(rrow.score,2)})')
             x.append(', '.join(xx))
 
         prevalent_clusters_ = prevalent_clusters.copy()
@@ -1243,7 +1245,7 @@ class Upskilling():
             self.upskilling_effects.append(
                 {
                     'new_skill': new_skill,
-                    'new_skill_label': [data.skills.loc[s].preferred_label for s in new_skill],
+                    'new_skill_label': [data.skills.loc[s].preferredLabel for s in new_skill],
                     'new_transitions': new_transitions,
                     'counts_new_safe_desirable': counts_safe_desirable,
                     'counts_new_strictly_safe_desirable': counts_strictly_safe_desirable,

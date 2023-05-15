@@ -4,6 +4,8 @@ import numpy as np
 import pickle
 import os
 from mcc_sussex import PROJECT_DIR
+from mcc_sussex.backend.getters.esco import esco_occupations, esco_occuptions_to_skills, esco_skills, esco_occupation_ids, esco_skill_ids, esco_essential_skills_lookup, esco_optional_skills_lookup
+
 
 processed_folder = f"{PROJECT_DIR}/mcc_sussex/data/processed/"
 
@@ -63,7 +65,7 @@ class Data:
     def describe_occupation(self, job_i):
         """ Show occupation's description and alternative labels """
         print(
-            f'occupation ID {job_i}: {self.occupations.loc[job_i].preferred_label}')
+            f'occupation ID {job_i}: {self.occupations.loc[job_i].preferredLabel}')
         print('\n---\nDescription:\n')
         print(self.occupations.loc[job_i].description)
         print('\n---\nAlternative occupation labels:\n')
@@ -77,7 +79,7 @@ class Data:
         # Skill importance filter may be equal to None, 'Essential' or 'Optional'
         if type(skill_importance) != type(None):
             df = df[df.importance == skill_importance]
-        df = df.merge(self.skills[['id', 'preferred_label', 'description']],
+        df = df.merge(self.skills[['id', 'preferredLabel', 'description']],
                       left_on='skill_id', right_on='id', how='left')
         df = df.drop('id', axis=1)
         return df.reset_index(drop=True)
@@ -88,7 +90,7 @@ class Data:
         This could be later enhanced by allowing imprecise inputs
         """
         if type(occ_title) == str:
-            return self.occupations[self.occupations.preferred_label == occ_title].iloc[0].id
+            return self.occupations[self.occupations.preferredLabel == occ_title].iloc[0].id
         else:
             return occ_title
 
@@ -98,7 +100,7 @@ class Data:
         This could be later enhanced by allowing imprecise inputs
         """
         if type(skill_title) == str:
-            return self.skills[self.skills.preferred_label == skill_title].iloc[0].id
+            return self.skills[self.skills.preferredLabel == skill_title].iloc[0].id
         else:
             return skill_title
 
@@ -129,8 +131,8 @@ class Data:
     def occupations(self):
         """ ESCO occupations with their full descriptions """
         if self._occupations is None:
-            self._occupations = self.read_csv(
-                self.dir + 'ESCO_occupations.csv')
+            self._occupations = pd.merge(left=esco_occupations(), right=esco_occupation_ids(),
+                                         how="left", on="conceptUri").set_index("id", drop=False)
         return self._occupations
 
     @property
@@ -145,8 +147,8 @@ class Data:
     def skills(self):
         """ ESCO skills and their place in the skills hierarchy """
         if self._skills is None:
-            self._skills = self.read_csv(
-                self.dir + 'ESCO_skills_hierarchy/ESCO_skills_hierarchy.csv')
+            self._skills = pd.merge(left=esco_skills().rename(columns={"conceptUri": "skillUri"}), right=esco_skill_ids(),
+                                    how="left", on="skillUri").rename(columns={"skill_id": "id"}).set_index("id", drop=False)
         return self._skills
 
     @property
@@ -161,8 +163,10 @@ class Data:
     def occupation_to_skills(self):
         """ Links between ESCO occupations and skills, and indication of whether the skills are Essential or Optional  """
         if self._occupation_to_skills is None:
-            self._occupation_to_skills = self.read_csv(
-                self.dir + 'ESCO_occupation_to_skills.csv')
+            occupation_to_skills_temp = pd.merge(left=esco_occuptions_to_skills().rename(columns={"occupationUri": "conceptUri"}), right=esco_occupation_ids(),
+                                                 how="left", on="conceptUri")
+            self._occupation_to_skills = pd.merge(left=occupation_to_skills_temp, right=esco_skill_ids(
+            ), how="left", on="skillUri").rename(columns={"id": "occupation_id"}).set_index("occupation_id", drop=False)
         return self._occupation_to_skills
 
     @property
@@ -172,8 +176,7 @@ class Data:
         formatted for NLP adjusted overlap measurements
         """
         if self._node_to_essential_items is None:
-            self._node_to_essential_items = pickle.load(
-                open(self.dir + 'occupation_to_essential_skills.pickle', 'rb'))
+            self._node_to_essential_items = esco_essential_skills_lookup()
         return self._node_to_essential_items
 
     @property
@@ -183,8 +186,7 @@ class Data:
         formatted for NLP adjusted overlap measurement
         """
         if self._node_to_all_items is None:
-            self._node_to_all_items = pickle.load(
-                open(self.dir + 'occupation_to_all_skills.pickle', 'rb'))
+            self._node_to_all_items = esco_optional_skills_lookup()
         return self._node_to_all_items
 
     @property
@@ -317,7 +319,7 @@ class Data:
         """ Joins up relevant datasets to create occupational profiles """
 
         merge_params = {'on': 'id', 'how': 'left'}
-        occ = self.occupation_hierarchy[['id', 'concept_type', 'concept_uri', 'preferred_label',
+        occ = self.occupation_hierarchy[['id', 'concept_type', 'concept_uri', 'preferredLabel',
                                          'isco_level_1', 'isco_level_2', 'isco_level_3', 'isco_level_4', 'is_top_level']].copy()
         occ = occ.merge(self.occ_jobzones[['id', 'job_zone', 'education_level',
                         'related_work_experience', 'on_the_job_training']], **merge_params)
@@ -344,7 +346,8 @@ class Data:
     def occ(self):
         """ All ESCO occupations (n=2942) """
         if self._occ is None:
-            self._occ = self.read_csv(self.default_master_table)
+            self._occ = pd.merge(left=esco_occupations(), right=esco_occupation_ids(),
+                                 how="left", on="conceptUri").set_index("id", drop=False)
         return self._occ
 
     @property

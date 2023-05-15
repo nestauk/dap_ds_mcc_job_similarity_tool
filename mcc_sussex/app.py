@@ -4,6 +4,8 @@ from PIL import Image
 from nesta_ds_utils.viz.altair import formatting
 from mcc_sussex.backend.recommendations import transitions_utils
 import mcc_sussex.backend.getters.load_data_utils as load_all_data
+from mcc_sussex.backend.getters.high_priority_sectors import priority_sector_map, sector_descriptions
+from mcc_sussex.backend.getters.job_zone import linked_job_zones
 from collections import defaultdict
 import altair as alt
 import pandas as pd
@@ -24,16 +26,27 @@ def load_data():
     return load_all_data.Data()
 
 
-def get_transitions(latest_job: str, data, n):
+@st.cache_data(show_spinner="Loading data")
+def load_sector_data():
+    return priority_sector_map(), sector_descriptions()
+
+
+@st.cache_data(show_spinner="Loading data")
+def load_job_zone_data():
+    data = linked_job_zones()
+    return data.loc[data["Type of Match"] != "wrongMatch"]
+
+
+def get_transitions(latest_job: str, n, destination_ids="all"):
     sim_data = transitions_utils.find_most_similar(
         latest_job,  # Origin occupation for which we're searching the other most similar other occupations
         similarity_measure="combined",  # Type of similarity measure to use
         n=n,  # Number of most similar occupations to show
-        # Pool of admissible destination occupations (try also 'all')
-        destination_ids='all',
+        # Pool of admissible destination occupations
+        destination_ids=destination_ids,
         transpose=False  # If job_i describes a jobseeker, set to False; if job_i describes a vacancy, set to True
     ).round(2)
-    return sim_data.loc[sim_data["preferred_label"] != latest_job]
+    return sim_data.loc[sim_data["preferredLabel"] != latest_job]
 
 
 def work_context_similarity(latest_job_id, transition_id):
@@ -64,7 +77,7 @@ def generate_work_context_paragraph(latest_job, transition, similar_categories, 
         first_sentence = "Transitioning from a {} to a {} would likely mean **little changes** to your work contexts. ".format(
             latest_job, transition)
     elif len(similar_categories) == 0:
-        first_sentence = "Transitioning from a {} to a {} would likely mean **significant changes* to your work contexts. ".format(
+        first_sentence = "Transitioning from a {} to a {} would likely mean **significant changes** to your work contexts. ".format(
             latest_job, transition)
     else:
         first_sentence = "Transitioning from a {} to a {} would likely mean **some changes** to your work contexts, most significantly in the **{}** category/categories. ".format(
@@ -93,7 +106,7 @@ def transition_details(transition_data, latest_job):
     latest_job_id = data.occ_title_to_id(latest_job)
 
     skills_dict = defaultdict(lambda: defaultdict(list))
-    for job in transition_data["preferred_label"]:
+    for job in transition_data["preferredLabel"]:
         job_id = data.occ_title_to_id(job)
 
         skill_overlap = transitions_utils.show_skills_overlap(
@@ -116,7 +129,26 @@ def transition_details(transition_data, latest_job):
     return skills_dict
 
 
+def job_zone(job_zone_data: pd.DataFrame, recommendation):
+    try:
+        job_zone = int(
+            job_zone_data.loc[job_zone_data["preferred_label"] == recommendation].iloc[0]["job_zone"])
+        if job_zone == 1:
+            return "Little or No Preparation Needed"
+        elif job_zone == 2:
+            return "Some Preparation Needed"
+        elif job_zone == 3:
+            return "Medium Preparation Needed"
+        elif job_zone == 4:
+            return "Considerable Preparation Needed"
+        elif job_zone == 5:
+            return "Extensive Preparation Needed"
+    except:
+        return "Unknown"
+
+
 data = load_data()
+job_zone_data = load_job_zone_data()
 
 # Set up banner at the top with title and logo
 logo, white_space, warning = st.columns([1, 3, 2])
@@ -148,35 +180,48 @@ with diamond:
 with label:
     st.title("To get started, enter your most recent job title:")
 with job_selector:
-    options = list(set(data.occupations["preferred_label"]))
+    options = list(set(data.occupations["preferredLabel"]))
     options.insert(0, "")
     latest_job = st.selectbox(
         label=" ", options=options, label_visibility="hidden")
 st.markdown("")
 st.markdown("")
+sector_filter_data, sec_descriptions = load_sector_data()
+sector_options = list(set(sector_filter_data["Sector"]))
+sector_options.insert(0, "Show all")
 sector_select = st.radio(
     label="Select to only show results within one of these high priority sectors",
-    options=[
-        "Show all",
-        "Manufacturing and Engineering",
-        "Visitor and Cultural Industries",
-        "Digital",
-        "Land Based",
-        "Construction",
-        "Health and Care"
-    ],
+    options=sector_options,
     horizontal=True)
 
 n_matches = st.slider(
     label="Select how many matches to show", min_value=1, max_value=15)
+
+if sector_select == "Show all":
+    st.markdown("Showing results for **All Sectors**")
+
+else:
+    st.markdown(
+        "Only showing results for the **{}** Sector".format(sector_select))
+    st.markdown(sec_descriptions[sector_select])
 
 st.markdown("""<hr style="height:3px;border:none;color:#e5cbff;background-color:#e5cbff;" /> """,
             unsafe_allow_html=True)
 
 if latest_job != "":  # only run the next bits once the user has entered a latest job
     # filter dictionary to return data on selected job (stored as latest_job)
-    transition_data = get_transitions(latest_job, data, n_matches+1)
+    if sector_select == "Show all":
+        transition_data = get_transitions(latest_job, n_matches+1)
 
+    else:
+        transition_options = sector_filter_data.loc[sector_filter_data["Sector"]
+                                                    == sector_select]["id"].to_list()
+        transition_data = get_transitions(
+            latest_job, n_matches, destination_ids=transition_options)
+
+    if transition_data.iloc[0]["similarity"] < 0.5:
+        st.markdown(
+            "🚨 WARNING: there are no highly similar matches based on the criteria provided 🚨")
     # generate bar chart to show top matches and skill overlaps
     match_overlap_bars = alt.Chart(transition_data).mark_bar().encode(
         x=alt.X("similarity:Q",
@@ -187,7 +232,7 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
                     labelColor="#102e4a",
                     grid=False),
                 scale=alt.Scale(domain=[0, 1])),
-        y=alt.Y("preferred_label:N",
+        y=alt.Y("preferredLabel:N",
                 axis=alt.Axis(
                     labelLimit=0,
                     title=None,
@@ -212,7 +257,7 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
         st.markdown(
             "*To learn more about how to transition into each of these jobs, expand the corresponding sections below*")
 
-    ordered_matches = list(transition_data["preferred_label"])
+    ordered_matches = list(transition_data["preferredLabel"])
 
     skill_matches = transition_details(transition_data, latest_job)
 
@@ -222,6 +267,9 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
             # display matching and missing skills for top match
             st.markdown("**{}**".format(
                 data.occupations.loc[data.occ_title_to_id(match)].description))
+            st.markdown(
+                "*Job Zone*: **{}**".format(job_zone(job_zone_data, match)))
+            st.markdown("A [Job Zone](https://www.onetonline.org/help/online/zones) is a group of occupations that are similar in level of education, training, and experience required to do the job.")
             match_data = skill_matches[match]
             work_context_data = match_data["work_context_data"]
             st.markdown("*Work Contexts*")

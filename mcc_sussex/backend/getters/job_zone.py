@@ -16,3 +16,7 @@ def education_training_experience():
 
 def education_training_experience_categories():
     return pd.read_excel(f"{PROJECT_DIR}/mcc_sussex/data/raw/Education, Training, and Experience Categories.xlsx", sheet_name="Education, Training, and Experi")
+
+
+def linked_job_zones():
+    return pd.read_csv(f"{PROJECT_DIR}/mcc_sussex/data/processed/linked_data/ESCO_occupations_Job_Zones.csv")

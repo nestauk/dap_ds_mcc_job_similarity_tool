@@ -16,6 +16,7 @@ import pickle
 import re
 import ast
 
+
 class PrepInputs:
     """
     Class that prepares inputs for comparing parent data items ("nodes") based
@@ -54,7 +55,7 @@ class PrepInputs:
         # have to store the embeddings in the memory
         self.prep_inputs(embeddings)
 
-    def prep_inputs(self,embeddings):
+    def prep_inputs(self, embeddings):
         """
         Selects the parent nodes that we wish to compare (specified by the
         self.sectors variable) and then computes the similarity
@@ -63,14 +64,15 @@ class PrepInputs:
         to the rows/columns of the similarity matrix.
         """
         # All items (children) that we will use
-        items_sample = np.array(sorted(list(set([k for items in self.node_to_items.items_list.to_list() for k in items]))))
+        items_sample = np.array(sorted(list(
+            set([k for items in self.node_to_items.items_list.to_list() for k in items]))))
 
         # Obtain similarity matrix for the sampled item embeddings
         if self.metric == 'precomputed':
-            self.D = embeddings[items_sample,:]
+            self.D = embeddings[items_sample, :]
             self.D = self.D[:, items_sample]
         else:
-            emb_sample = embeddings[items_sample,:]
+            emb_sample = embeddings[items_sample, :]
             self.D = 1 - squareform(pdist(emb_sample, metric=self.metric))
 
         # Link between the original item ids and the smaller distance matrix row/column indices
@@ -83,8 +85,10 @@ class PrepInputs:
         self.sector_node_ids = []
         for sector in self.sectors:
             # All lists of items belonging to nodes of a specific sector
-            node_to_items_list = self.node_to_items[self.node_to_items.sector==sector].items_list.to_list()
-            node_ids = self.node_to_items[self.node_to_items.sector==sector].id.to_list()
+            node_to_items_list = self.node_to_items[self.node_to_items.sector == sector].items_list.to_list(
+            )
+            node_ids = self.node_to_items[self.node_to_items.sector == sector].id.to_list(
+            )
             node_to_matrix = []
             for x in node_to_items_list:
                 node_to_matrix.append([self.items_lookup[i] for i in x])
@@ -97,9 +101,9 @@ class PrepInputs:
         """
         if sectors is not None:
             # Select sectors
-            f = np.array(dataframe.sector==sectors[0])
+            f = np.array(dataframe.sector == sectors[0])
             for s in sectors[1:]:
-                f = f | np.array(dataframe.sector==s)
+                f = f | np.array(dataframe.sector == s)
             return dataframe[f].reset_index()
         else:
             return dataframe
@@ -115,13 +119,14 @@ def all_indices(shape):
     """
     rows = np.array([0] * shape[0]*shape[1])
     cols = np.array([0] * shape[0]*shape[1])
-    k=0
+    k = 0
     for i in range(shape[0]):
         for j in range(shape[1]):
             rows[k] = i
             cols[k] = j
             k += 1
-    return (rows,cols)
+    return (rows, cols)
+
 
 class CompareNodes:
     """
@@ -180,12 +185,12 @@ class CompareNodes:
         self.w = weighting_params
         self._weighted_match_score = None
         self._unweighted_match_score = None
-        self.sim=[]
+        self.sim = []
         self.sim_edge_list = []
         self.edge_list = []
         self.edge_matched_scores = []
 
-    ### Item matching methods
+    # Item matching methods
     def compare_nodes(self):
         """
         Routine to compare and find best pairwise matches of "children" nodes’ embeddings
@@ -205,24 +210,27 @@ class CompareNodes:
                 n_j = self.n_j[node_j]
 
                 # In the edge case if there are nodes with no items
-                if (n_i==0) or (n_j==0):
+                if (n_i == 0) or (n_j == 0):
                     self.edge_matched_scores.append(np.array([0]))
                     if self.save_matched_items:
                         self.matched_items.append(('none'))
                     continue
 
                 # Select the distances between the relevant items
-                D_ = self.D[ii,:]
-                D_ = D_[:,jj]
+                D_ = self.D[ii, :]
+                D_ = D_[:, jj]
                 if self.matching_method == 'one_to_one':
-                    matched_scores, i_item_matched, j_item_matched = np.array(self.find_best_matches(D_, n_i, n_j))
+                    matched_scores, i_item_matched, j_item_matched = np.array(
+                        self.find_best_matches(D_, n_i, n_j))
                 elif self.matching_method == 'one_to_many':
-                    matched_scores, i_item_matched, j_item_matched = np.array(self.one_to_many_matches(D_, n_i, n_j))
+                    matched_scores, i_item_matched, j_item_matched = np.array(
+                        self.one_to_many_matches(D_, n_i, n_j))
 
                 # Save matched items if fine-grained outputs are required
                 # (Note: this will increase memory overhead)
                 if self.save_matched_items:
-                    self.matched_items.append((i_item_matched.astype(int), j_item_matched.astype(int)))
+                    self.matched_items.append(
+                        (i_item_matched.astype(int), j_item_matched.astype(int)))
 
                 self.edge_matched_scores.append(matched_scores)
 
@@ -268,7 +276,7 @@ class CompareNodes:
         while (len(i_item_matched) < n_i) and (len(j_item_matched) < n_j):
             k -= 1
             if ((ordered_i_items[k] in i_item_matched) or (ordered_j_items[k] in j_item_matched)):
-                continue # Destination item already matched or origin item already used
+                continue  # Destination item already matched or origin item already used
             i_item_matched.append(ordered_i_items[k])
             j_item_matched.append(ordered_j_items[k])
             matched_scores.append(ordered_scores[k])
@@ -321,7 +329,7 @@ class CompareNodes:
         while (len(j_item_matched) < n_j):
             k -= 1
             if (ordered_j_items[k] in j_item_matched):
-                continue # Destination item already matched
+                continue  # Destination item already matched
             i_item_matched.append(ordered_i_items[k])
             j_item_matched.append(ordered_j_items[k])
             matched_scores.append(ordered_scores[k])
@@ -344,9 +352,11 @@ class CompareNodes:
         further used in calculating the final similarity values.
         """
         if self._weighted_match_score is None:
-            self._weighted_match_score = np.zeros((len(self.edge_matched_scores),))
+            self._weighted_match_score = np.zeros(
+                (len(self.edge_matched_scores),))
             for i, matched_scores in enumerate(self.edge_matched_scores):
-                self._weighted_match_score[i] = np.sum(self.weighting_function(matched_scores,intercept=self.w[0],coeff=self.w[1]))
+                self._weighted_match_score[i] = np.sum(self.weighting_function(
+                    matched_scores, intercept=self.w[0], coeff=self.w[1]))
         return self._weighted_match_score
 
     @property
@@ -356,7 +366,8 @@ class CompareNodes:
         further used in calculating the final similarity values.
         """
         if self._unweighted_match_score is None:
-            self._unweighted_match_score = np.zeros((len(self.edge_matched_scores),))
+            self._unweighted_match_score = np.zeros(
+                (len(self.edge_matched_scores),))
             for i, matched_scores in enumerate(self.edge_matched_scores):
                 self._unweighted_match_score[i] = np.sum(matched_scores)
         return self._unweighted_match_score
@@ -370,13 +381,14 @@ class CompareNodes:
         """
         # List that will hold the final similarity values
         self.sim = [0] * len(self.edge_list)
-        self.sim_edge_list = self.edge_list.copy() # Not sure if this is used anymore
+        self.sim_edge_list = self.edge_list.copy()  # Not sure if this is used anymore
         # List that will hold the original IDs of the parent nodes
         self.real_edge_list = [0] * len(self.edge_list)
 
         # Go through each comparison between parent nodes
         for i, indices in enumerate(self.edge_list):
-            self.real_edge_list[i] = [self.sector_node_ids[0][indices[0]], self.sector_node_ids[1][indices[1]]]
+            self.real_edge_list[i] = [self.sector_node_ids[0]
+                                      [indices[0]], self.sector_node_ids[1][indices[1]]]
 
             # For comparison with self
             if self.real_edge_list[i][0] == self.real_edge_list[i][1]:
@@ -390,7 +402,8 @@ class CompareNodes:
             else:
                 self.sim[i] = self.unweighted_match_score[i] / denominator
 
-        self.real_edge_list += [[edge[1],edge[0]] for edge in self.real_edge_list]
+        self.real_edge_list += [[edge[1], edge[0]]
+                                for edge in self.real_edge_list]
         self.sim += self.sim
 
     def asymmetric_similarity(self):
@@ -402,7 +415,7 @@ class CompareNodes:
         """
         # List that will hold the final similarity values
         self.sim = [0] * (2*len(self.edge_list))
-        self.sim_edge_list = self.edge_list.copy() # Not sure if this is used anymore
+        self.sim_edge_list = self.edge_list.copy()  # Not sure if this is used anymore
         # List that will hold the original IDs of the parent nodes
         self.real_edge_list = [0] * (2*len(self.edge_list))
 
@@ -410,8 +423,10 @@ class CompareNodes:
         k = 0
         for i, indices in enumerate(self.edge_list):
 
-            self.real_edge_list[k] = [self.sector_node_ids[0][indices[0]], self.sector_node_ids[1][indices[1]]]
-            self.real_edge_list[k+1] = [self.sector_node_ids[1][indices[1]], self.sector_node_ids[0][indices[0]]]
+            self.real_edge_list[k] = [self.sector_node_ids[0]
+                                      [indices[0]], self.sector_node_ids[1][indices[1]]]
+            self.real_edge_list[k+1] = [self.sector_node_ids[1]
+                                        [indices[1]], self.sector_node_ids[0][indices[0]]]
 
             # For comparison with self
             if self.real_edge_list[k][0] == self.real_edge_list[k][1]:
@@ -434,10 +449,11 @@ class CompareNodes:
         Generates a similarity matrix between all parent nodes
         (Doesn't work when working with asymetric similarities!)
         """
-        D_tsc = np.zeros((len(self.node_to_matrix_sector_i),len(self.node_to_matrix_sector_j)))
+        D_tsc = np.zeros((len(self.node_to_matrix_sector_i),
+                         len(self.node_to_matrix_sector_j)))
         for i, indices in enumerate(self.edge_list):
             sim = self.sim[i]
-            D_tsc[indices[0],indices[1]] = sim
+            D_tsc[indices[0], indices[1]] = sim
         return D_tsc
 
 
@@ -467,8 +483,9 @@ def find_closest(i, similarity_matrix, df):
     """
     if type(i) == type(None):
         i = np.random.randint(similarity_matrix.shape[0])
-    most_similar = np.flip(np.argsort(similarity_matrix[i,:]))
-    similarity = np.flip(np.sort(similarity_matrix[i,:]))
+    similarity_matrix[~np.isfinite(similarity_matrix)] = 0
+    most_similar = np.flip(np.argsort(similarity_matrix[i, :]))
+    similarity = np.flip(np.sort(similarity_matrix[i, :]))
 
     df = df.copy().loc[most_similar]
     df['similarity'] = similarity
@@ -522,13 +539,14 @@ def two_node_comparison(node_to_items,
     """
 
     # Rename sectors to be the two seperate nodes
-    node_to_items_ = node_to_items.loc[np.array([node_i, node_j])].copy().reset_index(drop=True)
+    node_to_items_ = node_to_items.loc[np.array(
+        [node_i, node_j])].copy().reset_index(drop=True)
     node_to_items_['sector'] = 0
     node_to_items_.loc[0, 'sector'] = 'node_i'
     node_to_items_.loc[1, 'sector'] = 'node_j'
     combos = ('node_i', 'node_j')
 
-    if metric=='precomputed':
+    if metric == 'precomputed':
         w = None
     else:
         w = weighting_params
@@ -549,15 +567,17 @@ def two_node_comparison(node_to_items,
     compare_pair.compare_nodes()
     sim = compare_pair.edge_matched_scores[0]
 
-    if metric=='precomputed':
+    if metric == 'precomputed':
         score = sim
     else:
         score = compare_pair.weighting_function(
             sim, intercept=compare_pair.w[0], coeff=compare_pair.w[1])
 
     # Get the items
-    items_i = np.array(prep.node_to_items.items_list.loc[0])[compare_pair.matched_items[0][0]]
-    items_j = np.array(prep.node_to_items.items_list.loc[1])[compare_pair.matched_items[0][1]]
+    items_i = np.array(prep.node_to_items.items_list.loc[0])[
+        compare_pair.matched_items[0][0]]
+    items_j = np.array(prep.node_to_items.items_list.loc[1])[
+        compare_pair.matched_items[0][1]]
 
     # Create the comparison dataframe
     items_i_df = item_df.loc[items_i].copy()
@@ -570,15 +590,16 @@ def two_node_comparison(node_to_items,
 
     # Rounding, for dispay reasons
     if rounding:
-        item_comparison['similarity'] = np.round(score,3)
+        item_comparison['similarity'] = np.round(score, 3)
     else:
         item_comparison['similarity'] = score
 
     if metric != 'precomputed':
         item_comparison['similarity_raw'] = sim
 
-    if symmetric==True:
-        final_score = np.sum(score)  / max(len(node_to_items_.loc[0].items_list), len(node_to_items_.loc[1].items_list))
+    if symmetric == True:
+        final_score = np.sum(
+            score) / max(len(node_to_items_.loc[0].items_list), len(node_to_items_.loc[1].items_list))
     else:
         final_score = np.sum(score) / len(node_to_items_.loc[1].items_list)
 
@@ -670,7 +691,7 @@ class CompareSectors():
         """
         Generates file name for saving the intermediate sector-vs-sector outputs
         """
-        return save_name+'_'+re.sub(' ','_',combo[0])+'_vs_'+re.sub(' ','_',combo[1])+'.pickle'
+        return save_name+'_'+re.sub(' ', '_', combo[0])+'_vs_'+re.sub(' ', '_', combo[1])+'.pickle'
 
     def run_comparisons(self, dump=False):
         """
@@ -690,7 +711,8 @@ class CompareSectors():
             t = time.time()
             self.verbose: print(combo)
             # Prepare inputs for the comparison analysis
-            prep = PrepInputs(self.node_to_items, self.emb, list(combo), metric=self.metric)
+            prep = PrepInputs(self.node_to_items, self.emb,
+                              list(combo), metric=self.metric)
             # Do the comparison of parent nodes
             comp = CompareNodes(prep, weighting_params=self.w)
             comp.compare_nodes()
@@ -708,7 +730,8 @@ class CompareSectors():
                 self.results_list.append(res)
             else:
                 pickle.dump(res, open(self.fname(combo, self.save_name), 'wb'))
-            if self.verbose: print(f"{time.time()-t:.2f}")
+            if self.verbose:
+                print(f"{time.time()-t:.2f}")
 
             # Explicitly clean memory
             del prep, comp
@@ -731,7 +754,8 @@ class CompareSectors():
 
         # Pool together all edges and their similarity values
         for i, res in enumerate(self.results_list):
-            unique_indices = unique_indices.union(set(res['sector_node_ids'][0]).union(set(res['sector_node_ids'][1])))
+            unique_indices = unique_indices.union(
+                set(res['sector_node_ids'][0]).union(set(res['sector_node_ids'][1])))
 
             # Pool edges pertaining to similarity values (using their real indices)
             self.real_edge_list += res['real_edge_list']
@@ -743,18 +767,21 @@ class CompareSectors():
 
         # Select rows of 'node_to_items' dataframe that pertain to the parent nodes
         # included in this comparison
-        self.nodes = self.node_to_items[self.node_to_items.id.isin(self.unique_indices)]
+        self.nodes = self.node_to_items[self.node_to_items.id.isin(
+            self.unique_indices)]
 
     def similarity_matrix(self):
         """
         Creates a similarity matrix that stores the weights between each pair of parent nodes
         """
         # Map real edges to the similarity matrix
-        self.unique_indices_lookup = dict(zip(self.unique_indices, range(self.n_nodes)))
+        self.unique_indices_lookup = dict(
+            zip(self.unique_indices, range(self.n_nodes)))
         matrix_edge_list = [[]] * len(self.real_edge_list)
         for i, edge in enumerate(self.real_edge_list):
-            matrix_edge_list[i] = [self.unique_indices_lookup[edge[0]], self.unique_indices_lookup[edge[1]]]
+            matrix_edge_list[i] = [
+                self.unique_indices_lookup[edge[0]], self.unique_indices_lookup[edge[1]]]
 
-        self._D = np.zeros((self.n_nodes,self.n_nodes))
+        self._D = np.zeros((self.n_nodes, self.n_nodes))
         for i, index in enumerate(matrix_edge_list):
-            self._D[index[0],index[1]] = self.pooled_sim[i]
+            self._D[index[0], index[1]] = self.pooled_sim[i]
