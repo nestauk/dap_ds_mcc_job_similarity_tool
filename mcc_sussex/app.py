@@ -162,7 +162,7 @@ with warning:
 white_space, title, white_space = st.columns([1, 5, 1])
 
 with title:
-    st.title("Welcome to MCC Sussex’s Career Transition App")
+    st.title("Welcome to Sussex’s Career Transition App")
 
 # Generate markdown for subtitles
 st.markdown("_As part of our Future Skills Sussex project, we aim to give people the freedom to **progress in their career** by providing opportunities to **gain new skills** and ultimately **improve the productivity of the local Sussex economy** with **home grown talent**_")
