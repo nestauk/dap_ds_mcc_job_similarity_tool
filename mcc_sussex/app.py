@@ -272,7 +272,7 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
             st.markdown("A [Job Zone](https://www.onetonline.org/help/online/zones) is a group of occupations that are similar in level of education, training, and experience required to do the job.")
             match_data = skill_matches[match]
             work_context_data = match_data["work_context_data"]
-            st.markdown("*Work Contexts*")
+            st.subheader("*Work Contexts*")
             st.markdown(generate_work_context_paragraph(
                 latest_job,
                 match,
@@ -280,13 +280,14 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
                 work_context_data["different_categories"],
                 work_context_data["origin_work_contexts"],
                 work_context_data["destination_work_contexts"]))
-            st.markdown("*Skills*")
+            st.subheader("*Skills*")
             matches, bar, missing = st.columns([5, 1, 5])
             with matches:
                 st.markdown(
                     "We think you **already have** the following skills that would be needed as a {}:".format(match))
                 for skill in match_data["matching_skills"]:
-                    st.markdown(":green[- " + skill + "]")
+                    st.markdown(
+                        f'<t1 style="color:#005AB5;">{skill}</h1>', unsafe_allow_html=True)
 
             with bar:
                 # this bit is needed to create the bar in between the columns
@@ -294,6 +295,6 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
                     """<hr width="2" size="500" style="border:none;color:#102e4a;background-color:#102e4a;" /> """, unsafe_allow_html=True)
             with missing:
                 st.markdown("We think you **may need to learn** more about:")
-                st.markdown("*Skills*")
                 for skill in match_data["missing_skills"]:
-                    st.markdown(":red[- " + skill + "]")
+                    st.markdown(
+                        f'<t1 style="color:#DC3220;">{skill}</h1>', unsafe_allow_html=True)
