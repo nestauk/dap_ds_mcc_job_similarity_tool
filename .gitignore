@@ -8,3 +8,4 @@ backend/getters/__pycache__/data_loader.cpython-38.pyc
 backend/__pycache__/__init__.cpython-38.pyc
 backend/__pycache__/__init__.cpython-38.pyc
 mcc_sussex.egg-info/requires.txt
+*/data/*
