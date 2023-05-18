@@ -263,7 +263,8 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
 
     for match in ordered_matches:
 
-        with st.expander(label=match):
+        with st.expander(label=match.title()):
+            st.header(match.title())
             # display matching and missing skills for top match
             st.markdown("**{}**".format(
                 data.occupations.loc[data.occ_title_to_id(match)].description))
@@ -289,10 +290,10 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
                     st.markdown(
                         f'<t1 style="color:#005AB5;">{skill}</h1>', unsafe_allow_html=True)
 
-            with bar:
+            # with bar:
                 # this bit is needed to create the bar in between the columns
-                st.markdown(
-                    """<hr width="2" size="500" style="border:none;color:#102e4a;background-color:#102e4a;" /> """, unsafe_allow_html=True)
+            #    st.markdown(
+            #        """<hr width="2" size="500" style="border:none;color:#102e4a;background-color:#102e4a;" /> """, unsafe_allow_html=True)
             with missing:
                 st.markdown("We think you **may need to learn** more about:")
                 for skill in match_data["missing_skills"]:
