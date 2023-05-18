@@ -134,15 +134,15 @@ def job_zone(job_zone_data: pd.DataFrame, recommendation):
         job_zone = int(
             job_zone_data.loc[job_zone_data["preferred_label"] == recommendation].iloc[0]["job_zone"])
         if job_zone == 1:
-            return "Little or No Preparation Needed"
+            return "The Job Zone for a {} is **Little or No Preparation Needed**. Jobs in this category may require completion of GCSEs or A-Levels and usually require little to no previous work experience and minimal training.".format(recommendation)
         elif job_zone == 2:
-            return "Some Preparation Needed"
+            return "The Job Zone for a {} is **Some Preparation Needed**. Jobs in this category usually require completion of some A-Levels and some previous work experience or training.".format(recommendation)
         elif job_zone == 3:
-            return "Medium Preparation Needed"
+            return "The Job Zone for a {} is **Medium Preparation Needed**. Jobs in this category usually require vocational school or completion of A-Levels and 1-2 years of related work experience or training.".format(recommendation)
         elif job_zone == 4:
-            return "Considerable Preparation Needed"
+            return "The Job Zone for a {} is **Considerable Preparation Needed**. Jobs in this category usually require a Bachelor's degree and several years of related work experience or training.".format(recommendation)
         elif job_zone == 5:
-            return "Extensive Preparation Needed"
+            return "The Job Zone for a {} is **Extensive Preparation Needed**. Jobs in this category usually require a Graduate degree (Masters, PhD, etc.) and extensive experience (often more than 5 years)."
     except:
         return "Unknown"
 
@@ -268,9 +268,10 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
             # display matching and missing skills for top match
             st.markdown("**{}**".format(
                 data.occupations.loc[data.occ_title_to_id(match)].description))
+            st.subheader("*Level of Experience (Job Zone)*")
+            st.markdown(job_zone(job_zone_data, match))
             st.markdown(
-                "*Job Zone*: **{}**".format(job_zone(job_zone_data, match)))
-            st.markdown("A [Job Zone](https://www.onetonline.org/help/online/zones) is a group of occupations that are similar in level of education, training, and experience required to do the job.")
+                "Click [here](https://www.onetonline.org/help/online/zones) to learn more about Job Zones, as defined by the United States Department of Labor.")
             match_data = skill_matches[match]
             work_context_data = match_data["work_context_data"]
             st.subheader("*Work Contexts*")
@@ -281,6 +282,8 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
                 work_context_data["different_categories"],
                 work_context_data["origin_work_contexts"],
                 work_context_data["destination_work_contexts"]))
+            st.markdown(
+                "Click [here](https://www.onetonline.org/find/descriptor/browse/4.C/) to learn more about Work Contexts, as defined by the United States Department of Labor.")
             st.subheader("*Skills*")
             matches, bar, missing = st.columns([5, 1, 5])
             with matches:
@@ -289,11 +292,6 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
                 for skill in match_data["matching_skills"]:
                     st.markdown(
                         f'<t1 style="color:#005AB5;">{skill}</h1>', unsafe_allow_html=True)
-
-            # with bar:
-                # this bit is needed to create the bar in between the columns
-            #    st.markdown(
-            #        """<hr width="2" size="500" style="border:none;color:#102e4a;background-color:#102e4a;" /> """, unsafe_allow_html=True)
             with missing:
                 st.markdown("We think you **may need to learn** more about:")
                 for skill in match_data["missing_skills"]:
