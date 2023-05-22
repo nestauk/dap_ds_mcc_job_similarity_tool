@@ -7,3 +7,5 @@ fastapi
 uvicorn
 typing
 numba
+nesta_ds_utils[viz] @ git+https://github.com/nestauk/nesta_ds_utils.git
+openpyxl

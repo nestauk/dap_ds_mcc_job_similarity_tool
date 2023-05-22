@@ -1,3 +1,5 @@
+"""calculates the euclidian distance between each work activity (level 2 skill) vector of each occupation and saves similarity matrix
+"""
 from mcc_sussex.backend.getters.esco import level_2_skills, esco_occuptions_to_skills, esco_essential_skills_lookup, esco_occupations, esco_occupation_ids
 from mcc_sussex.backend.getters.similarity_matrices import essential_skill_similarity, optional_skill_similarity
 from ast import literal_eval

@@ -1,3 +1,5 @@
+"""generates lookups of level 2 skills and level 3 skills to ESCO occupations
+"""
 from mcc_sussex.backend.getters.esco import esco_skill_hierarchy, esco_skills, esco_skill_ids
 from ast import literal_eval
 from mcc_sussex import PROJECT_DIR

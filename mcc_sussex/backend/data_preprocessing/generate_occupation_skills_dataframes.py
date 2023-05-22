@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+Creates dataframes with all skills, only essential skills, and only optional skills for each ESCO occupation
+"""
 import logging
 
 import pandas as pd
