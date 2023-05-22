@@ -1,4 +1,6 @@
-from mcc_sussex.backend.getters.similarity_matrices import essential_skill_similarity, optional_skill_similarity, work_context_similarity, work_area_similarity
+"""averages the four similarity scores (work context, work area, essential skill, optional skill) to generate the final similarity matrix
+"""
+from mcc_sussex.backend.getters.similarity_matrices import essential_skill_similarity, optional_skill_similarity, work_context_similarity, work_activity_similarity
 from mcc_sussex.backend.getters.esco import esco_occupations, esco_occupation_ids
 from mcc_sussex.backend.getters.work_context import occupations_work_context_vector
 from mcc_sussex.backend.recommendations import compare_nodes_utils
@@ -11,7 +13,7 @@ if __name__ == "__main__":
     W_essential = essential_skill_similarity()
     W_all_to_essential = optional_skill_similarity()
     W_work_context = work_context_similarity()
-    W_work_area = work_area_similarity()
+    W_work_area = work_activity_similarity()
 
     occupations = pd.merge(left=esco_occupations(), right=esco_occupation_ids(),
                            how="left", on="conceptUri").set_index("id", drop=False)

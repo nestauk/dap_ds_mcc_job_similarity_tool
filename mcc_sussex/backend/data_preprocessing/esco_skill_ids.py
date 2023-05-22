@@ -1,3 +1,5 @@
+"""assigns ids to esco skills based on row ids
+"""
 import pandas as pd
 from mcc_sussex.backend.getters.esco import esco_occuptions_to_skills
 from mcc_sussex import PROJECT_DIR

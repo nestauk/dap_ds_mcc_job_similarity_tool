@@ -1,3 +1,5 @@
+"""calculates the similarity between all essential skills of the origin occupation to all skills (essential + optional) in the destination occupation
+"""
 from mcc_sussex.backend.getters.esco import esco_skills, esco_occupations, esco_occuptions_to_skills, esco_essential_skills_lookup, esco_all_skills_lookup
 from mcc_sussex.backend.getters.embeddings import load_embeddings
 from mcc_sussex.backend.recommendations import compare_nodes_utils

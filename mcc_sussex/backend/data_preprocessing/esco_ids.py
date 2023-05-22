@@ -1,3 +1,5 @@
+"""assigns ids to esco occupations based on row ids
+"""
 import pandas as pd
 from mcc_sussex.backend.getters.esco import esco_occupations
 from mcc_sussex import PROJECT_DIR

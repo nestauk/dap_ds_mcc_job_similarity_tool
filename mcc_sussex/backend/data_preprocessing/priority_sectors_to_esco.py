@@ -1,3 +1,5 @@
+"""maps the ESCO codes to the high priority sectors provided by Sussex
+"""
 import pandas as pd
 from mcc_sussex.backend.getters.high_priority_sectors import get_raw_sector_data
 from mcc_sussex.backend.getters.crosswalk import esco_soc_crosswalk

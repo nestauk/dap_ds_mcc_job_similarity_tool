@@ -1,4 +1,6 @@
-from mcc_sussex.backend.getters.esco import esco_occupations, esco_ids
+"""generates vectors for each ESCO occupation represesnting the score for each of the 57 ONET work contexts
+"""
+from mcc_sussex.backend.getters.esco import esco_occupations, esco_occupation_ids
 from mcc_sussex.backend.getters.crosswalk import esco_onet_crosswalk
 from mcc_sussex.backend.getters.work_context import work_context
 from mcc_sussex.backend.recommendations import compare_nodes_utils
@@ -9,12 +11,12 @@ import numpy as np
 import pandas as pd
 
 # ESCO occupations
-occupations = pd.merge(left=esco_occupations(), right=esco_ids(),
+occupations = pd.merge(left=esco_occupations(), right=esco_occupation_ids(),
                        how="left", on="conceptUri").set_index("id", drop=False)
 occupations.index = occupations.index.set_names("row_num")
 # Crosswalk between ESCO and O*NET
 esco_onet_xwalk = pd.merge(
-    left=esco_onet_crosswalk().rename(columns={"concept_uri": "conceptUri"}), right=esco_ids(), how="left", on="conceptUri"
+    left=esco_onet_crosswalk().rename(columns={"concept_uri": "conceptUri"}), right=esco_occupation_ids(), how="left", on="conceptUri"
 ).set_index("id", drop=False).drop_duplicates(subset="id")
 
 esco_onet_xwalk = esco_onet_xwalk.loc[esco_onet_xwalk["Type of Match"] != "wrongMatch"]

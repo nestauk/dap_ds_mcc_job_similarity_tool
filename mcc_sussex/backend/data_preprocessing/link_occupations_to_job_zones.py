@@ -1,3 +1,5 @@
+"""identifies an ONET job zone for each ESCO occupation
+"""
 from mcc_sussex import PROJECT_DIR
 from mcc_sussex.backend.getters.crosswalk import esco_onet_crosswalk
 from mcc_sussex.backend.getters.job_zone import onet_job_zone_reference, onet_job_zones, education_training_experience, education_training_experience_categories
