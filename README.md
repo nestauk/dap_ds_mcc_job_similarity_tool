@@ -1,6 +1,6 @@
 # Sussex Job Similarity Tool
 
-This repo provides the code used to create the (Job Similarity Tool)[https://sussex-career-transitions.dap-tools.uk] developed in partnership with Sussex Chamber of Commerce.
+This repo provides the code used to create the [Job Similarity Tool](https://sussex-career-transitions.dap-tools.uk) developed in partnership with Sussex Chamber of Commerce.
 
 The repo has two main attributes:
 
@@ -10,6 +10,6 @@ The repo has two main attributes:
 
 To run the app locally:
 1. Clone this repo `git clone https://github.com/nestauk/dap_ds_mcc_job_similarity_tool.git`
-2. Download the (data)[]
+2. Download the [data]()
 3. Install the project: from within the project folder run `pip install -e .`
 4. Run the app: `streamlit run mcc_sussex/app.py`
