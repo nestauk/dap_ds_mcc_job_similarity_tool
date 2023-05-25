@@ -73,6 +73,7 @@ def work_context_similarity(latest_job_id, transition_id):
 
 
 def generate_work_context_paragraph(latest_job, transition, similar_categories, different_categories, key_work_contexts_origin, key_work_contexts_dest):
+    transition = transition.lower()
     if len(different_categories) == 0:
         first_sentence = "Transitioning from a {} to a {} would likely mean **little changes** to your work contexts. ".format(
             latest_job, transition)
@@ -165,8 +166,7 @@ with title:
     st.title("Welcome to Sussex’s Career Transition App")
 
 # Generate markdown for subtitles
-st.markdown("_As part of our Future Skills Sussex project, we aim to give people the freedom to **progress in their career** by providing opportunities to **gain new skills** and ultimately **improve the productivity of the local Sussex economy** with **home grown talent**_")
-st.markdown("")
+st.subheader("As part of our Future Skills Sussex project, we aim to give people the freedom to **progress in their career** by providing opportunities to **gain new skills** and ultimately **improve the productivity of the local Sussex economy** with **home grown talent**")
 st.subheader("Use this app to find new career opportunities that are in line with your existing skill sets, and find out where you may need to focus training in order to progress.")
 st.markdown("""<hr style="height:3px;border:none;color:#e5cbff;background-color:#e5cbff;" /> """,
             unsafe_allow_html=True)
@@ -223,8 +223,9 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
                 latest_job, n_matches, destination_ids=transition_options)
 
     if transition_data.iloc[0]["similarity"] < 0.5:
+
         st.markdown(
-            "🚨 WARNING: there are no highly similar matches based on the criteria provided 🚨")
+            "🚨 **WARNING**: there are no highly similar matches based on the criteria provided 🚨")
     transition_data["label_field"] = transition_data["preferredLabel"].str.capitalize()
     # generate bar chart to show top matches and skill overlaps
     match_overlap_bars = alt.Chart(transition_data).mark_bar().encode(
@@ -259,7 +260,7 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
         # display bar chart in app
         st.altair_chart(match_overlap_bars)
 
-    white_space, text, white_space = st.columns([2, 5, 1])
+    white_space, text, white_space = st.columns([1, 2, 1])
     with text:
         st.markdown(
             "*To learn more about how to transition into each of these jobs, expand the corresponding sections below*")
@@ -275,13 +276,13 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
             # display matching and missing skills for top match
             st.markdown("**{}**".format(
                 data.occupations.loc[data.occ_title_to_id(match.lower())].description))
-            st.subheader("*Level of Experience (Job Zone)*")
+            st.subheader("Level of Experience (Job Zone)")
             st.markdown(job_zone(job_zone_data, match))
             st.markdown(
                 "Click [here](https://www.onetonline.org/help/online/zones) to learn more about Job Zones, as defined by the United States Department of Labor.")
             match_data = skill_matches[match.lower()]
             work_context_data = match_data["work_context_data"]
-            st.subheader("*Work Contexts*")
+            st.subheader("Work Contexts")
             st.markdown(generate_work_context_paragraph(
                 latest_job,
                 match,
@@ -291,7 +292,7 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
                 work_context_data["destination_work_contexts"]))
             st.markdown(
                 "Click [here](https://www.onetonline.org/find/descriptor/browse/4.C/) to learn more about Work Contexts, as defined by the United States Department of Labor.")
-            st.subheader("*Skills*")
+            st.subheader("Skills")
             matches, bar, missing = st.columns([5, 1, 5])
             with matches:
                 st.markdown(
