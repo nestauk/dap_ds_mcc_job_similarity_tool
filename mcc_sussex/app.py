@@ -160,10 +160,10 @@ with warning:
     st.markdown(
         "🚨 WARNING: This app is meant for demonstrative purposes only. Check out this article for more information about the algorithm behind it.🚨")
 
-white_space, title, white_space = st.columns([1, 5, 1])
+white_space, title, white_space = st.columns([1.2, 2, 1])
 
 with title:
-    st.title("Welcome to Sussex’s Career Transition App")
+    st.title("Welcome to Job Pathfinder")
 
 # Generate markdown for subtitles
 st.subheader("As part of our Future Skills Sussex project, we aim to give people the freedom to **progress in their career** by providing opportunities to **gain new skills** and ultimately **improve the productivity of the local Sussex economy** with **home grown talent**")
