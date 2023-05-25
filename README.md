@@ -5,7 +5,7 @@ This repo provides the code used to create the [Job Similarity Tool](https://sus
 The repo has two main attributes:
 
   1. `mcc_sussex/app.py`: the code for the frontend of the Streamlit app
-  2. `mcc_sussex/backend/*`: all of the code for the data preprocessing and similarity calculations to recommend viable job transitions
+  2. `mcc_sussex/backend/*`: all of the code for the data preprocessing and similarity calculations to recommend viable job transitions using the algorithm described in this [blog post](INSERT LINK TO BLOG)
 
 
 To run the app locally:
