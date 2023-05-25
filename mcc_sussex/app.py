@@ -178,10 +178,11 @@ label, job_selector = st.columns([3/7, 4/7])
 with label:
     st.title("Start by entering a job title:")
 with job_selector:
-    options = list(set(data.occupations["preferredLabel"]))
+    options = list(set(data.occupations["preferredLabel"].str.capitalize()))
     options.insert(0, "")
     latest_job = st.selectbox(
         label=" ", options=options, label_visibility="hidden")
+    latest_job = latest_job.lower()
 st.markdown("")
 st.markdown("")
 sector_filter_data, sec_descriptions = load_sector_data()
@@ -224,6 +225,7 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
     if transition_data.iloc[0]["similarity"] < 0.5:
         st.markdown(
             "🚨 WARNING: there are no highly similar matches based on the criteria provided 🚨")
+    transition_data["label_field"] = transition_data["preferredLabel"].str.capitalize()
     # generate bar chart to show top matches and skill overlaps
     match_overlap_bars = alt.Chart(transition_data).mark_bar().encode(
         x=alt.X("similarity:Q",
@@ -234,12 +236,15 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
                     labelColor="#102e4a",
                     grid=False),
                 scale=alt.Scale(domain=[0, 1])),
-        y=alt.Y("preferredLabel:N",
+        y=alt.Y("label_field:N",
                 axis=alt.Axis(
                     labelLimit=0,
                     title=None,
                     labelColor="#102e4a"),
-                sort="-x")
+                sort="-x"),
+        tooltip=[
+            alt.Tooltip("label_field", title="Job title"),
+            alt.Tooltip("similarity:Q", title="Similarity", format=".0%")]
     ).properties(
         height=300,
         width=1000
@@ -259,22 +264,22 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
         st.markdown(
             "*To learn more about how to transition into each of these jobs, expand the corresponding sections below*")
 
-    ordered_matches = list(transition_data["preferredLabel"])
+    ordered_matches = list(transition_data["label_field"])
 
     skill_matches = transition_details(transition_data, latest_job)
 
     for match in ordered_matches:
 
-        with st.expander(label=match.title()):
-            st.header(match.title())
+        with st.expander(label=match):
+            st.header(match)
             # display matching and missing skills for top match
             st.markdown("**{}**".format(
-                data.occupations.loc[data.occ_title_to_id(match)].description))
+                data.occupations.loc[data.occ_title_to_id(match.lower())].description))
             st.subheader("*Level of Experience (Job Zone)*")
             st.markdown(job_zone(job_zone_data, match))
             st.markdown(
                 "Click [here](https://www.onetonline.org/help/online/zones) to learn more about Job Zones, as defined by the United States Department of Labor.")
-            match_data = skill_matches[match]
+            match_data = skill_matches[match.lower()]
             work_context_data = match_data["work_context_data"]
             st.subheader("*Work Contexts*")
             st.markdown(generate_work_context_paragraph(
