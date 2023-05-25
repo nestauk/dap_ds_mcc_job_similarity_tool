@@ -216,8 +216,12 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
     else:
         transition_options = sector_filter_data.loc[sector_filter_data["Sector"]
                                                     == sector_select]["id"].to_list()
-        transition_data = get_transitions(
-            latest_job, n_matches, destination_ids=transition_options)
+        if data.occ_title_to_id(latest_job) in transition_options:
+            transition_data = get_transitions(
+                latest_job, n_matches+1, destination_ids=transition_options)
+        else:
+            transition_data = get_transitions(
+                latest_job, n_matches, destination_ids=transition_options)
 
     if transition_data.iloc[0]["similarity"] < 0.5:
         st.markdown(
