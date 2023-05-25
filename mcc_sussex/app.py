@@ -157,7 +157,7 @@ with logo:
         f"{current_dir}/mcc_sussex/images/nesta_sussex_logo.png"))
 with warning:
     st.markdown(
-        "🚨 WARNING: This app is currently in **beta** and the algorithm to reccommend jobs is **experimental** 🚨")
+        "🚨 WARNING: This app is meant for demonstrative purposes only. Check out this article for more information about the algorithm behind it.🚨")
 
 white_space, title, white_space = st.columns([1, 5, 1])
 
