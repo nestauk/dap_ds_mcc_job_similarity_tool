@@ -174,11 +174,9 @@ st.markdown("")
 st.markdown("")
 
 # Allow user to enter job title which is stored in the variable "latest_job" - the options are defined by the keys in the data dictionary
-diamond, label, job_selector = st.columns([.75, 10, 4])
-with diamond:
-    st.image(Image.open(f"{current_dir}/mcc_sussex/images/diamond.png"))
+label, job_selector = st.columns([3/7, 4/7])
 with label:
-    st.title("To get started, enter your most recent job title:")
+    st.title("Start by entering a job title:")
 with job_selector:
     options = list(set(data.occupations["preferredLabel"]))
     options.insert(0, "")
