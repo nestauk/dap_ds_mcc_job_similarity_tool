@@ -1,7 +1,7 @@
 """maps the ESCO codes to the high priority sectors provided by Sussex
 """
 import pandas as pd
-from mcc_sussex.backend.getters.high_priority_sectors import get_raw_sector_data
+from mcc_sussex.backend.getters.high_priority_sectors import get_cleaned_sector_data
 from mcc_sussex.backend.getters.crosswalk import esco_soc_crosswalk
 from mcc_sussex.backend.getters.esco import esco_occupations, esco_occupation_ids
 from mcc_sussex import PROJECT_DIR
@@ -37,7 +37,7 @@ def create_soc_to_sector() -> pd.DataFrame:
         pd.Dataframe: Dataframe with SOC and Sector code mapping
     """
     # Read the excel file and get a list of sheet names
-    sector_data_file = get_raw_sector_data(type="openpyxl")
+    sector_data_file = get_cleaned_sector_data(type="openpyxl")
     sector_names = sector_data_file.sheetnames
 
     # Create an empty list to store the dataframes
@@ -45,7 +45,7 @@ def create_soc_to_sector() -> pd.DataFrame:
 
     # Loop through each sheet and append the modified dataframe to the list of dataframes
     for sector in sector_names:
-        df = pd.read_excel(get_raw_sector_data(), sheet_name=sector)
+        df = pd.read_excel(get_cleaned_sector_data(), sheet_name=sector)
         worksheet = sector_data_file[sector]
 
         # filter out hidden rows!!

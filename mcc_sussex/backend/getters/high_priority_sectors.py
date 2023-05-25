@@ -15,9 +15,24 @@ def get_raw_sector_data(type: Union[str, bool] = None) -> Union[openpyxl.Workboo
         Union[openpyxl.Workbook, pd.ExcelFile]: either Openxpyxl workbook or excel file
     """
     if type == "openpyxl":
-        return openpyxl.load_workbook(f'{PROJECT_DIR}/mcc_sussex/data/raw/SOC Codes for 6 Key Sectors.xlsx')
+        return openpyxl.load_workbook(f'{PROJECT_DIR}/mcc_sussex/data/raw/SOC Codes for 6 Key Sectors V2.xlsx')
     else:
-        return pd.ExcelFile(f'{PROJECT_DIR}/mcc_sussex/data/raw/SOC Codes for 6 Key Sectors.xlsx')
+        return pd.ExcelFile(f'{PROJECT_DIR}/mcc_sussex/data/raw/SOC Codes for 6 Key Sectors V2.xlsx')
+
+
+def get_cleaned_sector_data(type: Union[str, bool] = None) -> Union[openpyxl.Workbook, pd.ExcelFile]:
+    """Manually expanded the last tab of the raw data with the updated high priority sectors
+
+    Args:
+        type (Union[str, bool], optional): "openpyxl": return data as Openpyxl workbook, otherwise return as pandas Excel File. Defaults to None.
+
+    Returns:
+        Union[openpyxl.Workbook, pd.ExcelFile]: either Openxpyxl workbook or excel file
+    """
+    if type == "openpyxl":
+        return openpyxl.load_workbook(f'{PROJECT_DIR}/mcc_sussex/data/interim/priority_sectors_manual_cleaning.xlsx')
+    else:
+        return pd.ExcelFile(f'{PROJECT_DIR}/mcc_sussex/data/interim/priority_sectors_manual_cleaning.xlsx')
 
 
 def priority_sector_map() -> pd.DataFrame:
