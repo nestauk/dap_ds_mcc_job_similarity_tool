@@ -10,6 +10,8 @@ from collections import defaultdict
 import altair as alt
 import pandas as pd
 from typing import Dict, Union, List, Tuple
+import urllib.request
+
 formatting.setup_theme()
 
 PAGE_TITLE = "Career Transitions"
@@ -107,7 +109,7 @@ def transition_details(transition_data, latest_job):
     latest_job_id = data.occ_title_to_id(latest_job)
 
     skills_dict = defaultdict(lambda: defaultdict(list))
-    for job in transition_data["preferredLabel"]:
+    for job in transition_data["preferredLabel"].str.lower():
         job_id = data.occ_title_to_id(job)
 
         skill_overlap = transitions_utils.show_skills_overlap(
@@ -152,7 +154,7 @@ data = load_data()
 job_zone_data = load_job_zone_data()
 
 # Set up banner at the top with title and logo
-logo, white_space, warning = st.columns([1, 3, 2])
+logo, white_space, warning = st.columns([2, 3, 3])
 with logo:
     st.image(Image.open(
         f"{current_dir}/mcc_sussex/images/nesta_sussex_logo.png"))
@@ -274,6 +276,7 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
         with st.expander(label=match):
             st.header(match)
             # display matching and missing skills for top match
+            # REVISIT THIS ISSUE
             st.markdown("**{}**".format(
                 data.occupations.loc[data.occ_title_to_id(match.lower())].description))
             st.subheader("Level of Experience (Job Zone)")
@@ -305,3 +308,14 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
                 for skill in match_data["missing_skills"]:
                     st.markdown(
                         f'<t1 style="color:#DC3220;">{skill}</h1>', unsafe_allow_html=True)
+
+            url_str = "https://nationalcareers.service.gov.uk/job-profiles/{}".format(
+                match.lower().replace(" ", "-"))
+            try:
+                urllib.request.urlopen(url_str).getcode()
+                st.markdown(
+                    "Check out this [page]({}) for more information".format(url_str))
+
+            except:
+                st.markdown("Check out this [page]({}) for more information".format(
+                    "https://nationalcareers.service.gov.uk/explore-careers"))

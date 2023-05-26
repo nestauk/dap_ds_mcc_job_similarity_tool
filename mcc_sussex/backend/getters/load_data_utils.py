@@ -90,7 +90,7 @@ class Data:
         This could be later enhanced by allowing imprecise inputs
         """
         if type(occ_title) == str:
-            return self.occupations[self.occupations.preferredLabel == occ_title].iloc[0].id
+            return self.occupations[self.occupations.preferredLabel.str.lower() == occ_title].iloc[0].id
         else:
             return occ_title
 
