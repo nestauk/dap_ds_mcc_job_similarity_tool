@@ -135,7 +135,7 @@ def transition_details(transition_data, latest_job):
 def job_zone(job_zone_data: pd.DataFrame, recommendation):
     try:
         job_zone = int(
-            job_zone_data.loc[job_zone_data["preferred_label"].str.lower() == recommendation].iloc[0]["job_zone"])
+            job_zone_data.loc[job_zone_data["preferred_label"].str.lower() == recommendation.lower()].iloc[0]["job_zone"])
         if job_zone == 1:
             return "The Job Zone for a {} is **Little or No Preparation Needed**. Jobs in this category may require completion of GCSEs or A-Levels and usually require little to no previous work experience and minimal training.".format(recommendation)
         elif job_zone == 2:
