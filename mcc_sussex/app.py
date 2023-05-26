@@ -10,6 +10,8 @@ from collections import defaultdict
 import altair as alt
 import pandas as pd
 from typing import Dict, Union, List, Tuple
+import urllib.request
+
 formatting.setup_theme()
 
 PAGE_TITLE = "Career Transitions"
@@ -73,6 +75,7 @@ def work_context_similarity(latest_job_id, transition_id):
 
 
 def generate_work_context_paragraph(latest_job, transition, similar_categories, different_categories, key_work_contexts_origin, key_work_contexts_dest):
+    transition = transition.lower()
     if len(different_categories) == 0:
         first_sentence = "Transitioning from a {} to a {} would likely mean **little changes** to your work contexts. ".format(
             latest_job, transition)
@@ -106,7 +109,7 @@ def transition_details(transition_data, latest_job):
     latest_job_id = data.occ_title_to_id(latest_job)
 
     skills_dict = defaultdict(lambda: defaultdict(list))
-    for job in transition_data["preferredLabel"]:
+    for job in transition_data["preferredLabel"].str.lower():
         job_id = data.occ_title_to_id(job)
 
         skill_overlap = transitions_utils.show_skills_overlap(
@@ -151,39 +154,37 @@ data = load_data()
 job_zone_data = load_job_zone_data()
 
 # Set up banner at the top with title and logo
-logo, white_space, warning = st.columns([1, 3, 2])
+logo, white_space, warning = st.columns([2, 3, 3])
 with logo:
     st.image(Image.open(
         f"{current_dir}/mcc_sussex/images/nesta_sussex_logo.png"))
 with warning:
     st.markdown(
-        "🚨 WARNING: This app is currently in **beta** and the algorithm to reccommend jobs is **experimental** 🚨")
+        "🚨 WARNING: This app is meant for demonstrative purposes only. Check out this article for more information about the algorithm behind it.🚨")
 
-white_space, title, white_space = st.columns([1, 5, 1])
+white_space, title, white_space = st.columns([1.2, 2, 1])
 
 with title:
-    st.title("Welcome to Sussex’s Career Transition App")
+    st.title("Welcome to Job Pathfinder")
 
 # Generate markdown for subtitles
-st.markdown("_As part of our Future Skills Sussex project, we aim to give people the freedom to **progress in their career** by providing opportunities to **gain new skills** and ultimately **improve the productivity of the local Sussex economy** with **home grown talent**_")
-st.markdown("")
-st.subheader("Use this app to find new career opportunities that are in line with your existing skill sets, and find out where you may need to focus training in order to progress.")
+st.subheader("As part of our Future Skills Sussex project, we aim to give people the freedom to **progress in their career** by providing opportunities to **gain new skills** and ultimately **improve the productivity of the local Sussex economy** with **home grown talent**")
+st.subheader("Use this app to find new career opportunities that are in line with your existing skill sets, find similar jobs to a job you may be considering, and find out where you may need to focus training in order to get where you want to be in your career.")
 st.markdown("""<hr style="height:3px;border:none;color:#e5cbff;background-color:#e5cbff;" /> """,
             unsafe_allow_html=True)
 st.markdown("")
 st.markdown("")
 
 # Allow user to enter job title which is stored in the variable "latest_job" - the options are defined by the keys in the data dictionary
-diamond, label, job_selector = st.columns([.75, 10, 4])
-with diamond:
-    st.image(Image.open(f"{current_dir}/mcc_sussex/images/diamond.png"))
+label, job_selector = st.columns([3/7, 4/7])
 with label:
-    st.title("To get started, enter your most recent job title:")
+    st.title("Start by entering a job title:")
 with job_selector:
-    options = list(set(data.occupations["preferredLabel"]))
+    options = list(set(data.occupations["preferredLabel"].str.capitalize()))
     options.insert(0, "")
     latest_job = st.selectbox(
         label=" ", options=options, label_visibility="hidden")
+    latest_job = latest_job.lower()
 st.markdown("")
 st.markdown("")
 sector_filter_data, sec_descriptions = load_sector_data()
@@ -198,11 +199,11 @@ n_matches = st.slider(
     label="Select how many matches to show", min_value=1, max_value=15)
 
 if sector_select == "Show all":
-    st.markdown("Showing results for **All Sectors**")
+    st.markdown("Showing similar jobs across **All Sectors**")
 
 else:
     st.markdown(
-        "Only showing results for the **{}** Sector".format(sector_select))
+        "Only showing similar jobs within the **{}** Sector".format(sector_select))
     st.markdown(sec_descriptions[sector_select])
 
 st.markdown("""<hr style="height:3px;border:none;color:#e5cbff;background-color:#e5cbff;" /> """,
@@ -224,8 +225,10 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
                 latest_job, n_matches, destination_ids=transition_options)
 
     if transition_data.iloc[0]["similarity"] < 0.5:
+
         st.markdown(
-            "🚨 WARNING: there are no highly similar matches based on the criteria provided 🚨")
+            "🚨 **WARNING**: there are no highly similar matches based on the criteria provided 🚨")
+    transition_data["label_field"] = transition_data["preferredLabel"].str.capitalize()
     # generate bar chart to show top matches and skill overlaps
     match_overlap_bars = alt.Chart(transition_data).mark_bar().encode(
         x=alt.X("similarity:Q",
@@ -236,12 +239,15 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
                     labelColor="#102e4a",
                     grid=False),
                 scale=alt.Scale(domain=[0, 1])),
-        y=alt.Y("preferredLabel:N",
+        y=alt.Y("label_field:N",
                 axis=alt.Axis(
                     labelLimit=0,
                     title=None,
                     labelColor="#102e4a"),
-                sort="-x")
+                sort="-x"),
+        tooltip=[
+            alt.Tooltip("label_field", title="Job title"),
+            alt.Tooltip("similarity:Q", title="Similarity", format=".0%")]
     ).properties(
         height=300,
         width=1000
@@ -256,29 +262,30 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
         # display bar chart in app
         st.altair_chart(match_overlap_bars)
 
-    white_space, text, white_space = st.columns([2, 5, 1])
+    white_space, text, white_space = st.columns([1, 2, 1])
     with text:
         st.markdown(
             "*To learn more about how to transition into each of these jobs, expand the corresponding sections below*")
 
-    ordered_matches = list(transition_data["preferredLabel"])
+    ordered_matches = list(transition_data["label_field"])
 
     skill_matches = transition_details(transition_data, latest_job)
 
     for match in ordered_matches:
 
-        with st.expander(label=match.title()):
-            st.header(match.title())
+        with st.expander(label=match):
+            st.header(match)
             # display matching and missing skills for top match
+            # REVISIT THIS ISSUE
             st.markdown("**{}**".format(
-                data.occupations.loc[data.occ_title_to_id(match)].description))
-            st.subheader("*Level of Experience (Job Zone)*")
+                data.occupations.loc[data.occ_title_to_id(match.lower())].description))
+            st.subheader("Level of Experience (Job Zone)")
             st.markdown(job_zone(job_zone_data, match))
             st.markdown(
                 "Click [here](https://www.onetonline.org/help/online/zones) to learn more about Job Zones, as defined by the United States Department of Labor.")
-            match_data = skill_matches[match]
+            match_data = skill_matches[match.lower()]
             work_context_data = match_data["work_context_data"]
-            st.subheader("*Work Contexts*")
+            st.subheader("Work Contexts")
             st.markdown(generate_work_context_paragraph(
                 latest_job,
                 match,
@@ -288,7 +295,7 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
                 work_context_data["destination_work_contexts"]))
             st.markdown(
                 "Click [here](https://www.onetonline.org/find/descriptor/browse/4.C/) to learn more about Work Contexts, as defined by the United States Department of Labor.")
-            st.subheader("*Skills*")
+            st.subheader("Skills")
             matches, bar, missing = st.columns([5, 1, 5])
             with matches:
                 st.markdown(
@@ -301,3 +308,14 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
                 for skill in match_data["missing_skills"]:
                     st.markdown(
                         f'<t1 style="color:#DC3220;">{skill}</h1>', unsafe_allow_html=True)
+
+            url_str = "https://nationalcareers.service.gov.uk/job-profiles/{}".format(
+                match.lower().replace(" ", "-"))
+            try:
+                urllib.request.urlopen(url_str).getcode()
+                st.markdown(
+                    "Check out this [page]({}) for more information".format(url_str))
+
+            except:
+                st.markdown("Check out this [page]({}) for more information".format(
+                    "https://nationalcareers.service.gov.uk/explore-careers"))
