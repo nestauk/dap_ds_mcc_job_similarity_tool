@@ -169,7 +169,7 @@ with title:
 
 # Generate markdown for subtitles
 st.subheader("As part of our Future Skills Sussex project, we aim to give people the freedom to **progress in their career** by providing opportunities to **gain new skills** and ultimately **improve the productivity of the local Sussex economy** with **home grown talent**")
-st.subheader("Use this app to find new career opportunities that are in line with your existing skill sets, explore career paths from a job you are considering, and find out where you may need to focus training in order to progress.")
+st.subheader("Use this app to find new career opportunities that are in line with your existing skill sets, find similar jobs to a job you may be considering, and find out where you may need to focus training in order to get where you want to be in your career.")
 st.markdown("""<hr style="height:3px;border:none;color:#e5cbff;background-color:#e5cbff;" /> """,
             unsafe_allow_html=True)
 st.markdown("")
