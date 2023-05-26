@@ -169,7 +169,7 @@ with title:
 
 # Generate markdown for subtitles
 st.subheader("As part of our Future Skills Sussex project, we aim to give people the freedom to **progress in their career** by providing opportunities to **gain new skills** and ultimately **improve the productivity of the local Sussex economy** with **home grown talent**")
-st.subheader("Use this app to find new career opportunities that are in line with your existing skill sets, and find out where you may need to focus training in order to progress.")
+st.subheader("Use this app to find new career opportunities that are in line with your existing skill sets, explore career paths from a job you are considering, and find out where you may need to focus training in order to progress.")
 st.markdown("""<hr style="height:3px;border:none;color:#e5cbff;background-color:#e5cbff;" /> """,
             unsafe_allow_html=True)
 st.markdown("")
@@ -199,11 +199,11 @@ n_matches = st.slider(
     label="Select how many matches to show", min_value=1, max_value=15)
 
 if sector_select == "Show all":
-    st.markdown("Showing results for **All Sectors**")
+    st.markdown("Showing similar jobs across **All Sectors**")
 
 else:
     st.markdown(
-        "Only showing results for the **{}** Sector".format(sector_select))
+        "Only showing similar jobs within the **{}** Sector".format(sector_select))
     st.markdown(sec_descriptions[sector_select])
 
 st.markdown("""<hr style="height:3px;border:none;color:#e5cbff;background-color:#e5cbff;" /> """,
