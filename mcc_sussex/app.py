@@ -203,19 +203,24 @@ sector_select = st.radio(
     horizontal=True)
 
 
-if sector_select == "Show all":
-    st.markdown("Showing similar jobs across **All Sectors**")
-
-else:
-    st.markdown(
-        "Only showing similar jobs within the **{}** Sector".format(sector_select))
-    st.markdown(sec_descriptions[sector_select])
-
 st.markdown("""<hr style="height:3px;border:none;color:#e5cbff;background-color:#e5cbff;" /> """,
             unsafe_allow_html=True)
 
+
 if latest_job != "":  # only run the next bits once the user has entered a latest job
     # filter dictionary to return data on selected job (stored as latest_job)
+
+    if sector_select == "Show all":
+        st.markdown("Showing similar jobs across **All Sectors**")
+
+    else:
+        st.markdown(
+            "Only showing similar jobs within the **{}** Sector".format(sector_select))
+        st.markdown(sec_descriptions[sector_select])
+
+    st.markdown("""<hr style="height:3px;border:none;color:#e5cbff;background-color:#e5cbff;" /> """,
+                unsafe_allow_html=True)
+
     if sector_select == "Show all":
         transition_data = get_transitions(latest_job, n_matches+1)
 
