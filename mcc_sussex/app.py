@@ -147,10 +147,11 @@ def job_zone(job_zone_data: pd.DataFrame, recommendation):
         elif job_zone == 5:
             return "The Job Zone for a {} is **Extensive Preparation Needed**. Jobs in this category usually require a Graduate degree (Masters, PhD, etc.) and extensive experience (often more than 5 years).".format(recommendation)
     except:
-        return "Unknown"
+        return "Unable to find job zone information for this job via the United States Department of Labor."
 
 
 data = load_data()
+
 job_zone_data = load_job_zone_data()
 
 # Set up banner at the top with title and logo
@@ -160,7 +161,7 @@ with logo:
         f"{current_dir}/mcc_sussex/images/nesta_sussex_logo.png"))
 with warning:
     st.markdown(
-        "🚨 WARNING: This app is meant for demonstrative purposes only. Check out this article for more information about the algorithm behind it.🚨")
+        "🚨 **WARNING**: This app is meant for demonstrative purposes only. Check out this article for more information about the algorithm behind it.🚨")
 
 white_space, title, white_space = st.columns([1.2, 2, 1])
 
@@ -180,37 +181,46 @@ label, job_selector = st.columns([3/7, 4/7])
 with label:
     st.title("Start by entering a job title:")
 with job_selector:
-    options = list(set(data.occupations["preferredLabel"].str.capitalize()))
+    options = sorted(
+        list(map(str.strip, set(data.occupations["preferredLabel"].str.capitalize()))))
     options.insert(0, "")
     latest_job = st.selectbox(
         label=" ", options=options, label_visibility="hidden")
     latest_job = latest_job.lower()
+st.markdown(
+    "🚨 This app relies on job titles classified by [ESCO](https://esco.ec.europa.eu/en/classification/occupation_main): the multilingual classification of European Skills, Competences, and Occupations")
 st.markdown("")
 st.markdown("")
 sector_filter_data, sec_descriptions = load_sector_data()
+n_matches = st.slider(
+    label="**Select how many matches to show**", min_value=1, max_value=15)
+
 sector_options = list(set(sector_filter_data["Sector"]))
 sector_options.insert(0, "Show all")
 sector_select = st.radio(
-    label="Select to only show results within one of these high priority sectors",
+    label="**Select to only show results within one of these high priority sectors**",
     options=sector_options,
     horizontal=True)
 
-n_matches = st.slider(
-    label="Select how many matches to show", min_value=1, max_value=15)
-
-if sector_select == "Show all":
-    st.markdown("Showing similar jobs across **All Sectors**")
-
-else:
-    st.markdown(
-        "Only showing similar jobs within the **{}** Sector".format(sector_select))
-    st.markdown(sec_descriptions[sector_select])
 
 st.markdown("""<hr style="height:3px;border:none;color:#e5cbff;background-color:#e5cbff;" /> """,
             unsafe_allow_html=True)
 
+
 if latest_job != "":  # only run the next bits once the user has entered a latest job
     # filter dictionary to return data on selected job (stored as latest_job)
+
+    if sector_select == "Show all":
+        st.markdown("Showing similar jobs across **All Sectors**")
+
+    else:
+        st.markdown(
+            "Only showing similar jobs within the **{}** Sector".format(sector_select))
+        st.markdown(sec_descriptions[sector_select])
+
+    st.markdown("""<hr style="height:3px;border:none;color:#e5cbff;background-color:#e5cbff;" /> """,
+                unsafe_allow_html=True)
+
     if sector_select == "Show all":
         transition_data = get_transitions(latest_job, n_matches+1)
 
@@ -275,10 +285,20 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
 
         with st.expander(label=match):
             st.header(match)
-            # display matching and missing skills for top match
-            # REVISIT THIS ISSUE
             st.markdown("**{}**".format(
                 data.occupations.loc[data.occ_title_to_id(match.lower())].description))
+
+            url_str = "https://nationalcareers.service.gov.uk/job-profiles/{}".format(
+                match.lower().replace(" ", "-"))
+            try:
+                urllib.request.urlopen(url_str).getcode()
+                st.markdown(
+                    "Check out this [page]({}) on the National Careers Site to learn more".format(url_str))
+
+            except:
+                st.markdown("Search for similar jobs on the [Explore Careers]({}) page of the National Careers Site to learn more.".format(
+                    "https://nationalcareers.service.gov.uk/explore-careers"))
+
             st.subheader("Level of Experience (Job Zone)")
             st.markdown(job_zone(job_zone_data, match))
             st.markdown(
@@ -308,14 +328,3 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
                 for skill in match_data["missing_skills"]:
                     st.markdown(
                         f'<t1 style="color:#DC3220;">{skill}</h1>', unsafe_allow_html=True)
-
-            url_str = "https://nationalcareers.service.gov.uk/job-profiles/{}".format(
-                match.lower().replace(" ", "-"))
-            try:
-                urllib.request.urlopen(url_str).getcode()
-                st.markdown(
-                    "Check out this [page]({}) for more information".format(url_str))
-
-            except:
-                st.markdown("Check out this [page]({}) for more information".format(
-                    "https://nationalcareers.service.gov.uk/explore-careers"))
