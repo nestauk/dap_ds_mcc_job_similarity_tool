@@ -161,7 +161,7 @@ with logo:
         f"{current_dir}/mcc_sussex/images/nesta_sussex_logo.png"))
 with warning:
     st.markdown(
-        "🚨 WARNING: This app is meant for demonstrative purposes only. Check out this article for more information about the algorithm behind it.🚨")
+        "🚨 **WARNING**: This app is meant for demonstrative purposes only. Check out this article for more information about the algorithm behind it.🚨")
 
 white_space, title, white_space = st.columns([1.2, 2, 1])
 
@@ -187,6 +187,8 @@ with job_selector:
     latest_job = st.selectbox(
         label=" ", options=options, label_visibility="hidden")
     latest_job = latest_job.lower()
+st.markdown(
+    "🚨 This app relies on job titles classified by [ESCO](https://esco.ec.europa.eu/en/classification/occupation_main): the multilingual classification of European Skills, Competences, and Occupations")
 st.markdown("")
 st.markdown("")
 sector_filter_data, sec_descriptions = load_sector_data()
