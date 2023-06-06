@@ -147,7 +147,7 @@ def job_zone(job_zone_data: pd.DataFrame, recommendation):
         elif job_zone == 5:
             return "The Job Zone for a {} is **Extensive Preparation Needed**. Jobs in this category usually require a Graduate degree (Masters, PhD, etc.) and extensive experience (often more than 5 years).".format(recommendation)
     except:
-        return "Unknown"
+        return "Unable to find job zone information for this job via the United States Department of Labor."
 
 
 data = load_data()
