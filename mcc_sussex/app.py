@@ -277,10 +277,20 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
 
         with st.expander(label=match):
             st.header(match)
-            # display matching and missing skills for top match
-            # REVISIT THIS ISSUE
             st.markdown("**{}**".format(
                 data.occupations.loc[data.occ_title_to_id(match.lower())].description))
+
+            url_str = "https://nationalcareers.service.gov.uk/job-profiles/{}".format(
+                match.lower().replace(" ", "-"))
+            try:
+                urllib.request.urlopen(url_str).getcode()
+                st.markdown(
+                    "Check out this [page]({}) on the National Careers Site to learn more".format(url_str))
+
+            except:
+                st.markdown("Search for similar jobs on the [Explore Careers]({}) page of the National Careers Site to learn more.".format(
+                    "https://nationalcareers.service.gov.uk/explore-careers"))
+
             st.subheader("Level of Experience (Job Zone)")
             st.markdown(job_zone(job_zone_data, match))
             st.markdown(
@@ -310,14 +320,3 @@ if latest_job != "":  # only run the next bits once the user has entered a lates
                 for skill in match_data["missing_skills"]:
                     st.markdown(
                         f'<t1 style="color:#DC3220;">{skill}</h1>', unsafe_allow_html=True)
-
-            url_str = "https://nationalcareers.service.gov.uk/job-profiles/{}".format(
-                match.lower().replace(" ", "-"))
-            try:
-                urllib.request.urlopen(url_str).getcode()
-                st.markdown(
-                    "Check out this [page]({}) for more information".format(url_str))
-
-            except:
-                st.markdown("Check out this [page]({}) for more information".format(
-                    "https://nationalcareers.service.gov.uk/explore-careers"))
