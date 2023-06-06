@@ -151,6 +151,7 @@ def job_zone(job_zone_data: pd.DataFrame, recommendation):
 
 
 data = load_data()
+
 job_zone_data = load_job_zone_data()
 
 # Set up banner at the top with title and logo
@@ -180,7 +181,8 @@ label, job_selector = st.columns([3/7, 4/7])
 with label:
     st.title("Start by entering a job title:")
 with job_selector:
-    options = list(set(data.occupations["preferredLabel"].str.capitalize()))
+    options = sorted(
+        list(map(str.strip, set(data.occupations["preferredLabel"].str.capitalize()))))
     options.insert(0, "")
     latest_job = st.selectbox(
         label=" ", options=options, label_visibility="hidden")
