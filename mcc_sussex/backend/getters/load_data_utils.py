@@ -133,9 +133,11 @@ class Data:
         if self._occupations is None:
             self._occupations = pd.merge(left=esco_occupations(), right=esco_occupation_ids(),
                                          how="left", on="conceptUri").set_index("id", drop=False)
+            self._occupations.preferredLabel = self._occupations.preferredLabel.apply(
+                lambda x: x.strip())
         return self._occupations
 
-    @property
+    @ property
     def occupation_hierarchy(self):
         """ ESCO occupations and their place in the ISCO-ESCO hierarchy """
         if self._occupation_hierarchy is None:
@@ -143,7 +145,7 @@ class Data:
                 self.dir + 'ESCO_occupational_hierarchy/ESCO_occupational_hierarchy.csv')
         return self._occupation_hierarchy
 
-    @property
+    @ property
     def skills(self):
         """ ESCO skills and their place in the skills hierarchy """
         if self._skills is None:
@@ -151,7 +153,7 @@ class Data:
                                     how="left", on="skillUri").rename(columns={"skill_id": "id"}).set_index("id", drop=False)
         return self._skills
 
-    @property
+    @ property
     def concepts(self):
         """ ESCO skills hierarchy categories and their relationships """
         if self._concepts is None:
@@ -159,7 +161,7 @@ class Data:
                 self.dir + 'ESCO_skills_hierarchy/ESCO_skills_concepts_hierarchy.csv')
         return self._concepts
 
-    @property
+    @ property
     def occupation_to_skills(self):
         """ Links between ESCO occupations and skills, and indication of whether the skills are Essential or Optional  """
         if self._occupation_to_skills is None:
@@ -169,7 +171,7 @@ class Data:
             ), how="left", on="skillUri").rename(columns={"id": "occupation_id"}).set_index("occupation_id", drop=False)
         return self._occupation_to_skills
 
-    @property
+    @ property
     def node_to_essential_items(self):
         """
         Dataframe with essential skills IDs for each occupation,
@@ -179,7 +181,7 @@ class Data:
             self._node_to_essential_items = esco_essential_skills_lookup()
         return self._node_to_essential_items
 
-    @property
+    @ property
     def node_to_all_items(self):
         """
         Dataframe with essential and optional skills IDs for each occupation,
@@ -189,7 +191,7 @@ class Data:
             self._node_to_all_items = esco_optional_skills_lookup()
         return self._node_to_all_items
 
-    @property
+    @ property
     def isco_titles(self):
         """ ISCO occupational category codes and titles """
         if self._isco_titles is None:
@@ -199,7 +201,7 @@ class Data:
 
     ###  Linked data ###
 
-    @property
+    @ property
     def occ_risk(self):
         """
         ESCO occupations and estimates of their exposure to automation risks
@@ -218,7 +220,7 @@ class Data:
                 self.dir + 'ESCO_automation_risk.csv')
         return self._occ_risk_report
 
-    @property
+    @ property
     def occ_jobzones(self):
         """
         ESCO occupations and their Job Zones, and levels of education, related
@@ -229,7 +231,7 @@ class Data:
                 self.dir + 'linked_data/ESCO_occupations_Job_Zones.csv')
         return self._occ_jobzones
 
-    @property
+    @ property
     def occ_earnings_and_hours(self):
         """
         ESCO occupations and their estimates of annual earnings and paid hours
@@ -240,7 +242,7 @@ class Data:
                 self.dir + 'linked_data/ESCO_occupations_UK_earnings_and_hours_imputed.csv')
         return self._occ_earnings_and_hours
 
-    @property
+    @ property
     def occ_employment(self):
         """
         Estimates of employment for of ESCO occupations in the UK
@@ -251,7 +253,7 @@ class Data:
                 self.dir + 'linked_data/ESCO_top_occupations_UK_employment.csv')
         return self._occ_employment
 
-    @property
+    @ property
     def occ_remote(self):
         """
         ESCO occupations and their Remote Labor Index
@@ -261,7 +263,7 @@ class Data:
                 self.dir + 'linked_data/ESCO_occupations_Remote_Labor_Index.csv')
         return self._occ_remote
 
-    @property
+    @ property
     def occ_exposure(self):
         """
         ESCO occupations and estimates of their potential exposure to impacts from COVID-19
@@ -273,7 +275,7 @@ class Data:
 
     ###  Skills-based sectors and sub-sectors ###
 
-    @property
+    @ property
     def occ_clusters(self):
         """ ESCO occupations and their skills-based sectors and sub-sectors """
         if self._occ_clusters is None:
@@ -281,7 +283,7 @@ class Data:
                 self.dir + 'clusters/ESCO_occupation_clusters_v1_1_curated.csv')
         return self._occ_clusters
 
-    @property
+    @ property
     def clusters_level_1(self):
         """ Skills-based sectors, characterised by integer labels, automatic keywords and manual labels """
         if self._clusters_level_1 is None:
@@ -289,7 +291,7 @@ class Data:
                 self.dir + 'clusters/ESCO_occupation_clusters_v1_1_LEVEL1.csv')
         return self._clusters_level_1
 
-    @property
+    @ property
     def clusters_level_2(self):
         """ Skills-based sub-sectors, characterised by integer labels, automatic keywords and manual labels """
         if self._clusters_level_2 is None:
@@ -297,7 +299,7 @@ class Data:
                 self.dir + 'clusters/ESCO_occupation_clusters_v1_1_LEVEL2.csv')
         return self._clusters_level_2
 
-    @property
+    @ property
     def skills_based_sectors(self):
         """ Same information as in clusters_level_1 in a more polished form """
         if self._skills_based_sectors is None:
@@ -305,7 +307,7 @@ class Data:
                 'skills_based_sector_code', 'skills_based_sector', 'level_1']].reset_index(drop=True)
         return self._skills_based_sectors
 
-    @property
+    @ property
     def sub_sectors(self):
         """ Same information as in clusters_level_2 in a more polished form """
         if self._sub_sectors is None:
@@ -322,15 +324,15 @@ class Data:
         occ = self.occupation_hierarchy[['id', 'concept_type', 'concept_uri', 'preferredLabel',
                                          'isco_level_1', 'isco_level_2', 'isco_level_3', 'isco_level_4', 'is_top_level']].copy()
         occ = occ.merge(self.occ_jobzones[['id', 'job_zone', 'education_level',
-                        'related_work_experience', 'on_the_job_training']], **merge_params)
+                                           'related_work_experience', 'on_the_job_training']], **merge_params)
         occ = occ.merge(self.occ_earnings_and_hours[[
-                        'id', 'annual_earnings', 'total_paid_hours']], **merge_params)
+            'id', 'annual_earnings', 'total_paid_hours']], **merge_params)
         occ = occ.merge(self.occ_employment[[
-                        'id', 'employment_count', 'employment_share']], **merge_params)
+            'id', 'employment_count', 'employment_share']], **merge_params)
         occ = occ.merge(self.occ_risk[[
-                        'id', 'risk', 'prevalence', 'risk_category', 'onet_code', 'onet_occupation']], **merge_params)
+            'id', 'risk', 'prevalence', 'risk_category', 'onet_code', 'onet_occupation']], **merge_params)
         occ = occ.merge(self.occ_clusters[['id', 'level_1', 'level_2', 'skills_based_sector_code',
-                        'sub_sector_code', 'skills_based_sector', 'sub_sector']], **merge_params)
+                                           'sub_sector_code', 'skills_based_sector', 'sub_sector']], **merge_params)
         occ = occ.merge(
             self.occ_remote[['id', 'remote_labor_index']], **merge_params)
         occ = occ.merge(
@@ -342,15 +344,17 @@ class Data:
             occ.to_csv(save_path, index=False)
         return occ
 
-    @property
+    @ property
     def occ(self):
         """ All ESCO occupations (n=2942) """
         if self._occ is None:
             self._occ = pd.merge(left=esco_occupations(), right=esco_occupation_ids(),
                                  how="left", on="conceptUri").set_index("id", drop=False)
+            self._occ.preferredLabel = self._occ.preferredLabel.apply(
+                lambda x: x.strip())
         return self._occ
 
-    @property
+    @ property
     def occ_top(self):
         """ Master table of all 'top level' ESCO occupations (approx. 1700) """
         if self._occ_top is None:
@@ -358,7 +362,7 @@ class Data:
             ).reset_index(drop=True)
         return self._occ_top
 
-    @property
+    @ property
     def occ_report(self):
         """ Master table of the 'top level' ESCO occupations analysed in the report (n=1627) """
         if self._occ_report is None:
@@ -367,14 +371,14 @@ class Data:
                 df.id.to_list())].copy().reset_index(drop=True)
         return self._occ_report
 
-    @property
+    @ property
     def top_occ_ids(self):
         """ Integer identifiers of the approx. 1700 top ESCO occupations """
         if self._top_occ_ids is None:
             self._top_occ_ids = self.occ_top.id.to_list()
         return self._top_occ_ids
 
-    @property
+    @ property
     def report_occ_ids(self):
         """ Integer identifiers of the 1627 occupations analysed in the report """
         if self._report_occ_ids is None:
@@ -409,7 +413,7 @@ class Similarities:
         elif similarity_measure == 'work_context':
             return self.W_work_context
 
-    @staticmethod
+    @ staticmethod
     def select_subset(W, subset_ids):
         """
         Select a subset of the full similarity matrix
@@ -418,7 +422,7 @@ class Similarities:
         W_subset = W_subset[:, subset_ids]
         return W_subset
 
-    @property
+    @ property
     def W_combined(self):
         """
         Combined occupation similarities
@@ -428,7 +432,7 @@ class Similarities:
                 self.dir + 'sim_matrices/OccupationSimilarity_Combined.npy')
         return self._W_combined
 
-    @property
+    @ property
     def W_essential(self):
         """
         'Essential skills' similarities: Occcupation similarities based on the NLP-adjusted overlap of essential skills
@@ -438,7 +442,7 @@ class Similarities:
                 self.dir + 'sim_matrices/OccupationSimilarity_EssentialSkillsDescription_asymmetric.npy')
         return self._W_essential
 
-    @property
+    @ property
     def W_all_to_essential(self):
         """
         'Optional skills' similarities: Occupation similarities that include optional skills as well; specifically, the NLP-adjusted
@@ -449,7 +453,7 @@ class Similarities:
                 self.dir + 'sim_matrices/OccupationSimilarity_AllToEssentialSkillsDescription_asymmetric.npy')
         return self._W_all_to_essential
 
-    @property
+    @ property
     def W_activities(self):
         """
         'Work activities' similarities: Occupation similarities based on the categories of ESCO skills categories,
@@ -460,7 +464,7 @@ class Similarities:
                 self.dir + 'sim_matrices/OccupationSimilarity_ESCO_clusters_Level_2.npy')
         return self._W_activities
 
-    @property
+    @ property
     def W_work_context(self):
         """
         'Work context' similarities: Similarities based on ONET's work context features capturing structural, interpersonal,

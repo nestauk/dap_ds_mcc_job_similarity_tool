@@ -48,7 +48,8 @@ def get_transitions(latest_job: str, n, destination_ids="all"):
         destination_ids=destination_ids,
         transpose=False  # If job_i describes a jobseeker, set to False; if job_i describes a vacancy, set to True
     ).round(2)
-    return sim_data.loc[sim_data["preferredLabel"] != latest_job]
+
+    return sim_data.loc[sim_data["preferredLabel"].str.lower() != latest_job]
 
 
 def work_context_similarity(latest_job_id, transition_id):
@@ -151,7 +152,8 @@ def job_zone(job_zone_data: pd.DataFrame, recommendation):
 
 
 data = load_data()
-
+# data.occupations["preferredLabel"] = data.occupations["preferredLabel"].apply(
+#    lambda x: x.strip())
 job_zone_data = load_job_zone_data()
 
 # Set up banner at the top with title and logo
@@ -182,7 +184,7 @@ with label:
     st.title("Start by entering a job title:")
 with job_selector:
     options = sorted(
-        list(map(str.strip, set(data.occupations["preferredLabel"].str.capitalize()))))
+        list(set(data.occupations["preferredLabel"].str.capitalize())))
     options.insert(0, "")
     latest_job = st.selectbox(
         label=" ", options=options, label_visibility="hidden")
