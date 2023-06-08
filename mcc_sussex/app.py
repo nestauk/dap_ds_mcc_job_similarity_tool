@@ -195,7 +195,7 @@ st.markdown("")
 st.markdown("")
 sector_filter_data, sec_descriptions = load_sector_data()
 n_matches = st.slider(
-    label="**Select how many matches to show**", min_value=1, max_value=15)
+    label="**Select how many matches to show**", min_value=1, max_value=15, value=3)
 
 sector_options = list(set(sector_filter_data["Sector"]))
 sector_options.insert(0, "Show all")
