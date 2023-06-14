@@ -1,6 +1,6 @@
 # Sussex Job Similarity Tool
 
-This repo provides the code used to create the [Job Pathfinder Tool](https://sussex-career-transitions.dap-tools.uk) developed in partnership with Sussex Chamber of Commerce.
+This repo provides the code used to create the [SkillsMatcher](https://skillsmatcher.dap-tools.uk) developed in partnership with Sussex Chamber of Commerce.
 
 The repo has two main attributes:
 
