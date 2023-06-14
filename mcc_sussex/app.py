@@ -14,7 +14,7 @@ import urllib.request
 
 formatting.setup_theme()
 
-PAGE_TITLE = "Career Transitions"
+PAGE_TITLE = "SkillsMatcher"
 
 
 current_dir = os.getcwd()
@@ -152,8 +152,6 @@ def job_zone(job_zone_data: pd.DataFrame, recommendation):
 
 
 data = load_data()
-# data.occupations["preferredLabel"] = data.occupations["preferredLabel"].apply(
-#    lambda x: x.strip())
 job_zone_data = load_job_zone_data()
 
 # Set up banner at the top with title and logo
@@ -168,7 +166,7 @@ with warning:
 white_space, title, white_space = st.columns([1.2, 2, 1])
 
 with title:
-    st.title("Welcome to Job Pathfinder")
+    st.title("Welcome to SkillsMatcher")
 
 # Generate markdown for subtitles
 st.subheader("As part of our Future Skills Sussex project, we aim to give people the freedom to **progress in their career** by providing opportunities to **gain new skills** and ultimately **improve the productivity of the local Sussex economy** with **home grown talent**")
