@@ -161,7 +161,7 @@ with logo:
         f"{current_dir}/mcc_sussex/images/nesta_sussex_logo.png"))
 with warning:
     st.markdown(
-        "🚨 **WARNING**: This app is meant for demonstrative purposes only. Check out this article for more information about the algorithm behind it.🚨")
+        "🚨 **WARNING**: This app is meant for demonstrative purposes only. Check out [this article](https://medium.com/data-analytics-at-nesta/mapping-career-causeways-with-the-sussex-chamber-of-commerce-e62fe0b8ad92) for more information about the algorithm behind it.🚨")
 
 white_space, title, white_space = st.columns([1.2, 2, 1])
 
