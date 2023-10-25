@@ -9,7 +9,7 @@ The repo has two main attributes:
 
 To run the app locally:
 1. Clone this repo `git clone https://github.com/nestauk/dap_ds_mcc_job_similarity_tool.git`
-2. Download the [data](https://nesta-open-data.s3.eu-west-2.amazonaws.com/job-pathfinder-data/data.zip) with the pre-computed similarity calculations
+2. Download the [data](https://nesta-open-data.s3.eu-west-2.amazonaws.com/job-pathfinder-data/data.zip) with the pre-computed similarity calculations and place it within the `mcc_sussex` folder in the root directory
 3. Install the project: from within the project folder run `pip install -e .`
 4. Run the app: `streamlit run mcc_sussex/app.py`
 
