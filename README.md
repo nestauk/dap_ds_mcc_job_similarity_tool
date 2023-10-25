@@ -5,7 +5,7 @@ This repo provides the code used to create the [SkillsMatcher](https://skillsmat
 The repo has two main attributes:
 
   1. `mcc_sussex/app.py`: the code for the frontend of the Streamlit app
-  2. `mcc_sussex/backend/*`: all of the code for the data preprocessing and similarity calculations to evaluate job similarity using the algorithm described in this [blog post](INSERT LINK TO BLOG)
+  2. `mcc_sussex/backend/*`: all of the code for the data preprocessing and similarity calculations to evaluate job similarity using the algorithm described in this [blog post](https://medium.com/data-analytics-at-nesta/mapping-career-causeways-with-the-sussex-chamber-of-commerce-e62fe0b8ad92)
 
 To run the app locally:
 1. Clone this repo `git clone https://github.com/nestauk/dap_ds_mcc_job_similarity_tool.git`
